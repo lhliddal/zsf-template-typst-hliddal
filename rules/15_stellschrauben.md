@@ -71,6 +71,7 @@ für ZSF, die ungleich verteilt sind.
 | `mono-font` | DejaVu Sans Mono | Code |
 | `lang`, `region` | `"de"`, `"CH"` | Silbentrennung und Sprachregeln |
 | `justify` | `false` | Blocksatz statt Flattersatz |
+| `bind-units` | `true` | hält Zahl und Einheit in einer Zeile (`10 m/s`) |
 
 Flattersatz ist die Vorbelegung, weil der Blocksatz in ~50 mm schmalen Spalten
 entweder trennen oder Wortzwischenräume aufblähen muss.

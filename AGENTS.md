@@ -1,6 +1,6 @@
 # ZSF Template (Typst) — AGENTS.md
 
-> ERZEUGT — rules-hash:a48f8638c774085f
+> ERZEUGT — rules-hash:20c0f9f02b410f82
 >
 > Quelle: `rules/*.md`. Nicht direkt bearbeiten.
 > Ändern: `rules/*.md` editieren → `make sync-rules`. Drift: `make check-rules`.
@@ -171,6 +171,7 @@ Strip-Skript und keinen Verifier dafür.
 | `config.typ` | die Stellschrauben, ihre Vorbelegungen und **alle** abgeleiteten Masse |
 | `palette.typ` | die 18 Kapitel-Slots, Ton-Ableitung, Ink-Vertrag, gedämpfte Tinte |
 | `knobs.typ` | Reglerwerte nachschlagen, unbekannte Regler abweisen |
+| `readability.typ` | Umbruchschutz: Zahl und Einheit bleiben zusammen |
 | `structure.typ` | Balken, Kapitelfarbe, `front`, `newcol`, Kopf und Fuss |
 | `blocks.typ` | die Box und ihre Vorbelegungen, Trenner, Listen, Ketten |
 | `tables.typ` | `tabular` |
@@ -275,6 +276,7 @@ für ZSF, die ungleich verteilt sind.
 | `mono-font` | DejaVu Sans Mono | Code |
 | `lang`, `region` | `"de"`, `"CH"` | Silbentrennung und Sprachregeln |
 | `justify` | `false` | Blocksatz statt Flattersatz |
+| `bind-units` | `true` | hält Zahl und Einheit in einer Zeile (`10 m/s`) |
 
 Flattersatz ist die Vorbelegung, weil der Blocksatz in ~50 mm schmalen Spalten
 entweder trennen oder Wortzwischenräume aufblähen muss.
@@ -409,10 +411,15 @@ Inhaltsfrage, nicht auf »welche Box nehme ich«.
 Kapitel bringen dadurch Gliederung, PDF-Lesezeichen und die Registernummern
 von selbst mit.
 
-**Zeilenumbruch im Satz ist native Typst-Syntax**, kein Makro: `5~kg` bindet
-Zahl und Einheit, `Donau\-dampf\-schiff` gibt eine Trennstelle vor,
-`#sym.zws` erlaubt eine. Sparsam — häufen sie sich, ist der Text zu lang für
-die Spalte.
+**Zahl und Einheit binden von selbst.** `10 m/s`, `95 %`, `20 °C` bleiben in
+einer Zeile, ohne dass im Kapitel etwas steht (`bind-units`). Gebunden wird
+nur ein Kürzel aus höchstens drei Buchstaben — `3 Fälle` bricht weiterhin
+normal, sonst entstünden in einer 50 mm schmalen Spalte überlange Zeilen.
+
+Für den Rest ist der Umbruch **native Typst-Syntax**, kein Makro:
+`Donau\-dampf\-schiff` gibt eine Trennstelle vor, `#sym.zws` erlaubt eine,
+`~` bindet von Hand. Sparsam — häufen sie sich, ist der Text zu lang für die
+Spalte.
 
 Ein Front-Kapitel wird über **`anchor`** verweisbar: `#front("Zeichen &
 Einheiten", short: "Z&E", anchor: <ze>)`. Ein Label daneben hinge an der Marke

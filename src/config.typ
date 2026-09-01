@@ -66,6 +66,9 @@
   // trennen oder Wortzwischenräume aufblähen. Beides kostet mehr, als der
   // gerade rechte Rand einbringt.
   justify: false,
+  // Hält Zahl und Einheit zusammen (»10 m/s«), damit die Zeile nicht dazwischen
+  // bricht. Siehe `readability.typ`.
+  bind-units: true,
 
   // ── Farbe ──────────────────────────────────────────────────
   palette: seeds,

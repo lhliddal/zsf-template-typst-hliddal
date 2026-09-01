@@ -40,6 +40,7 @@ Namen; ein wirkungsloser Regler ist damit ausgeschlossen.
   [`font`], [Carlito], [Dokumentschrift],
   [`math-font`], [NewCM Sans Math], [Formelschrift],
   [`justify`], [false], [Blocksatz statt Flattersatz],
+  [`bind-units`], [true], [hält Zahl und Einheit in einer Zeile],
   [`palette`], [18 Slots], [die Kapitelfarben],
   [`quantities`], [–], [Grössenfarben des Fachs],
   [`quantity-colors`], [true], [`false` für den S/W-Druck, ohne die Vergabe anzutasten],
@@ -64,4 +65,22 @@ Namen; ein wirkungsloser Regler ist damit ausgeschlossen.
 #warn[
   `leading` enthält die Schrift selbst und verträgt keine grossen Schritte.
   Nach jeder Änderung das PDF auf kollidierende Formelzeilen prüfen.
+]
+
+== Zahl und Einheit <sec:bindung>
+
+#panel(weight: "quiet")[Bindet ohne Zutun][
+  In einer 50 mm schmalen Spalte bricht die Zeile gern zwischen Zahl und
+  Einheit. Diese bleiben deshalb zusammen: 10 m/s, 95 %, 20 °C, 1.5 kg,
+  50 mm, 7 Hz — im Kapitel steht dafür nichts.
+
+  #hl[Nur Kürzel bis drei Buchstaben.] 3 Fälle, 12 Beispiele und 5 Zeilen
+  brechen weiterhin normal; eine Zahl an ein langes Wort zu binden ergäbe hier
+  überlange Zeilen.
+]
+
+#panel(tone: "neutral")[Warum `box` und kein geschütztes Leerzeichen][
+  Gebunden wird über einen Kasten, nicht durch ein ersetztes Zeichen. Wer
+  eine Angabe aus dem PDF kopiert, bekommt deshalb weiterhin ein normales
+  Leerzeichen — kein U+00A0, das anderswo als Fehler auftaucht.
 ]

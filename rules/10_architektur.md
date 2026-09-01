@@ -35,6 +35,7 @@ Strip-Skript und keinen Verifier dafür.
 | `config.typ` | die Stellschrauben, ihre Vorbelegungen und **alle** abgeleiteten Masse |
 | `palette.typ` | die 18 Kapitel-Slots, Ton-Ableitung, Ink-Vertrag, gedämpfte Tinte |
 | `knobs.typ` | Reglerwerte nachschlagen, unbekannte Regler abweisen |
+| `readability.typ` | Umbruchschutz: Zahl und Einheit bleiben zusammen |
 | `structure.typ` | Balken, Kapitelfarbe, `front`, `newcol`, Kopf und Fuss |
 | `blocks.typ` | die Box und ihre Vorbelegungen, Trenner, Listen, Ketten |
 | `tables.typ` | `tabular` |

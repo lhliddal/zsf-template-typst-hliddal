@@ -23,6 +23,7 @@
 #import "src/config.typ" as _c
 #import "src/structure.typ" as _s
 #import "src/palette.typ" as _p
+#import "src/readability.typ" as _r
 
 /// Richtet das Dokument ein. Als Show-Regel verwenden:
 /// `#show: zsf.with(title: "…", density: 0.9)`
@@ -94,5 +95,5 @@
   // ── Kopf und Inhalt ────────────────────────────────────────
   // Der Dokumentkopf steht im Spaltenfluss: eine Spalte breit, kein Seitenkopf.
   _s.doc-header(c.title, c.author)
-  body
+  if c.bind-units { _r.bind-units(body) } else { body }
 }

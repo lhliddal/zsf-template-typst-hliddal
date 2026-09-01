@@ -17,10 +17,15 @@ purpose: Überschriften, Marker, Verweise, Farbe, Register
 Kapitel bringen dadurch Gliederung, PDF-Lesezeichen und die Registernummern
 von selbst mit.
 
-**Zeilenumbruch im Satz ist native Typst-Syntax**, kein Makro: `5~kg` bindet
-Zahl und Einheit, `Donau\-dampf\-schiff` gibt eine Trennstelle vor,
-`#sym.zws` erlaubt eine. Sparsam — häufen sie sich, ist der Text zu lang für
-die Spalte.
+**Zahl und Einheit binden von selbst.** `10 m/s`, `95 %`, `20 °C` bleiben in
+einer Zeile, ohne dass im Kapitel etwas steht (`bind-units`). Gebunden wird
+nur ein Kürzel aus höchstens drei Buchstaben — `3 Fälle` bricht weiterhin
+normal, sonst entstünden in einer 50 mm schmalen Spalte überlange Zeilen.
+
+Für den Rest ist der Umbruch **native Typst-Syntax**, kein Makro:
+`Donau\-dampf\-schiff` gibt eine Trennstelle vor, `#sym.zws` erlaubt eine,
+`~` bindet von Hand. Sparsam — häufen sie sich, ist der Text zu lang für die
+Spalte.
 
 Ein Front-Kapitel wird über **`anchor`** verweisbar: `#front("Zeichen &
 Einheiten", short: "Z&E", anchor: <ze>)`. Ein Label daneben hinge an der Marke

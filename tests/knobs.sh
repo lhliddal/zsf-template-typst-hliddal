@@ -27,7 +27,8 @@ und einem Verweis #xref(<a>).
 
 Ein zweiter Absatz — erst zwischen zweien wird der Absatzabstand sichtbar,
 und auch die Silbentrennung braucht Wahrscheinlichkeitsverteilungen als
-hinreichend lange Wörter.
+hinreichend lange Wörter. Messwerte für die Bindung: 10 m/s, dann 95 %,
+dann 20 °C, dann 1.5 kg, dann 50 mm und zuletzt 7 Hz im Fliesstext.
 #panel[Titel][Inhalt mit #hl[Hervorhebung] und #danger[Warnung].]
 #panel(weight: "quiet")[Leise][Kompakt.]
 #formula[$ integral_0^1 x^2 dif x = 1/3 $ #note[Anmerkung.]]
@@ -96,6 +97,7 @@ check "font" 'font: "Libertinus Serif"'
 check "math-font" 'math-font: "New Computer Modern Math"'
 check "mono-font" 'mono-font: "Libertinus Serif"'
 check "justify" 'justify: true'
+check "bind-units" 'bind-units: false'
 check "lang" 'lang: "en", region: "GB"'
 check "palette" 'palette: (rgb("#3B0A45"), rgb("#0A453B"), rgb("#453B0A"))'
 check "title" 'title: "Anderer Titel"'

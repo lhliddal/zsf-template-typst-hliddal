@@ -11,6 +11,7 @@
 #import "../src/structure.typ": accent-for
 #import "../src/index.typ": sort-key
 #import "../src/config.typ": defaults, derive
+#import "../src/readability.typ": unit-pattern
 
 // ── Sortierung nach DIN 5007-1 ───────────────────────────────
 #assert.eq(sort-key("Übung"), "ubung")
@@ -208,6 +209,31 @@
 #assert(L(ink-faint) < L(ink-ghost))
 #assert(L(ink-faint) - L(ink-muted) > 10)
 #assert(L(ink-ghost) - L(ink-faint) > 10)
+
+// ── Zahl-Einheit-Bindung ─────────────────────────────────────
+// Die Wortgrenze ist der ganze Trick der Regel; ohne sie band sie auch
+// »1 Fliesstext« zu »1 Fli«. Beide Richtungen werden hier festgehalten.
+#let binds(s) = s.match(regex(unit-pattern)) != none
+
+// Was gebunden gehört: SI-Symbole, Prozent, Grad, Bruch-Einheiten, Dezimal-
+// zahlen mit Punkt wie mit Komma.
+#for s in (
+  "10 m", "10 m/s", "95 %", "20 °C", "1.5 kg", "2,5 kN", "50 mm",
+  "2 MPa", "7 Hz", "3 N/mm", "0,3 s",
+) {
+  assert(binds(s), message: "sollte binden: " + s)
+}
+
+// Was NICHT gebunden gehört: Zahl vor einem gewöhnlichen Wort. Drei Buchstaben
+// passen auf jeden Wortanfang — erst die Wortgrenze trennt »kg« von »Fäl«.
+#for s in ("1 Fliesstext", "3 Fälle", "12 Beispiele", "5 Zeilen", "2 Spalten") {
+  assert(not binds(s), message: "sollte nicht binden: " + s)
+}
+
+// Kein Leerzeichen, keine Bindung — und ein Punkt ist kein Dezimaltrenner,
+// wenn keine Ziffer folgt (»am 3. Mai«).
+#assert(not binds("7pt"))
+#assert(not binds("3. Mai"))
 
 // Bildhöhen sind Inhalt und folgen der Dichte nicht.
 #assert.eq(dense.image-height, base.image-height)

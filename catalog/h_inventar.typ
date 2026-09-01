@@ -155,7 +155,7 @@ nicht veralten — im Vorgänger war sie von Hand nachgeführt.
 
 #context {
   let zeilen = read("/lib.typ").split("\n").len()
-  for m in ("config", "knobs", "palette", "structure", "blocks", "tables", "media", "markup", "maths", "index") {
+  for m in ("config", "knobs", "readability", "palette", "structure", "blocks", "tables", "media", "markup", "maths", "index") {
     zeilen += read("/src/" + m + ".typ").split("\n").len()
   }
   panel[H-05 · Was die Zahlen sagen][
