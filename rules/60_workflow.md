@@ -7,12 +7,15 @@ purpose: Bauen, prüfen, forken, Dateien platzieren
 ## Befehle
 
 ```bash
-make build      # Katalog bauen (im Fork: die ZSF)
+make build      # Referenz-Implementierung (im Fork: die ZSF)
 make watch      # live nachbauen, während geschrieben wird
+make catalog    # Baustein-Katalog — nach jeder Änderung an der API
 make check      # der ganze Harness — vor jedem Commit
 make fork NAME=zsf-fach-fs2026
 make sync-rules # rules/*.md → AGENTS.md
 ```
+
+`make check` meldet einen gegenüber `src/` veralteten Katalog.
 
 **Erledigt ist eine Aufgabe erst nach erfolgreichem `make build`** — mit genau
 diesem Befehl. Innerhalb einer Aufgabe wird nach abgeschlossenen Einheiten

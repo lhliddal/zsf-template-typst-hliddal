@@ -12,9 +12,8 @@ purpose: Der Baustein-Katalog und seine Regler
 #baustein(regler: wert)[…][…]  // Regler sind benannte Argumente
 ```
 
-Die Reihenfolge der Regler ist bedeutungslos, und ein unbekannter Name bricht
-den Build. Beides folgt aus der Sprache und ist nichts, was das Template
-zusichern müsste.
+Die Reihenfolge der Regler ist bedeutungslos, ein unbekannter Name bricht den
+Build.
 
 ## Katalog
 
@@ -37,8 +36,8 @@ zusichern müsste.
 | Reiner Fliesstext | ein Absatz — kein Baustein nötig |
 
 `warn`, `formula`, `picture`, `steps` und `code` sind **Vorbelegungen von
-`panel`**, je eine Zeile. Ein Name kommt nur dazu, wenn er eine eigene Absicht
-trägt *und* eine Vorbelegung mitbringt, die man sonst komponieren müsste.
+`panel`**. Ein Name kommt nur dazu, wenn er eine eigene Absicht trägt *und*
+eine Vorbelegung, die man sonst komponieren müsste.
 
 ## Die Regler
 
@@ -61,10 +60,9 @@ Rahmenstärken, Balken und Tabellenkopf werden daraus in OKLCH abgeleitet. Es
 gibt keine Ton-Deklaration mit Pflichtrollen mehr.
 
 **Wie laut was ist, liegt fest:** Der Titelbalken einer Box ist *hell mit
-dunkler Schrift*, ihr Rumpf fast weiss. Gesättigt sind nur die Kapitel- und
-Abschnittsbalken, die Tabellenkopfzeile und der Warn-Ton — die vier Stellen,
-die von weitem gefunden werden müssen. Wer eine Box lauter haben will, hat
-meistens den falschen Baustein gewählt.
+dunkler Schrift*, ihr Rumpf fast weiss. Gesättigt sind nur Kapitel- und
+Abschnittsbalken, Tabellenkopf und der Warn-Ton — die vier Stellen, die von
+weitem gefunden werden müssen.
 
 `tone: "neutral"` heisst »gehört nicht zum Kapitelthema« (Konvention, Legende).
 `weight: "quiet"` heisst »kompakt und dezent«. Beides sind Antworten auf eine

@@ -11,16 +11,16 @@
 // nicht steht, wird nicht pro ZSF entschieden, sondern pro Stelle über einen
 // Regler am Baustein — oder gar nicht.
 
-#import "src/config.typ": defaults, derive, cfg, conf
-#import "src/palette.typ": seeds as palette, tone-of, math-marks, quantity-colors, body-fill, ink
-#import "src/structure.typ": front, newcol, current-accent, chapter-tone, accent-for
+#import "src/palette.typ": seeds as palette, tone-of
+#import "src/structure.typ": front, newcol
 #import "src/blocks.typ": panel, warn, formula, picture, code, steps, facts, item, split, sep, note, before, after, given, step, target, case
 #import "src/tables.typ": tabular
-#import "src/media.typ": fig, fig-side, caption, image-budget
+#import "src/media.typ": fig, fig-side, caption
 #import "src/markup.typ": kw, lbl, danger, concl, hl, diagram-label, xref, secref, markA, markB, markC, markD, quantity, script-ref
 #import "src/maths.typ": *
 #import "src/index.typ": idx, idx-see, make-index
 
+#import "src/config.typ" as _c
 #import "src/structure.typ" as _s
 #import "src/palette.typ" as _p
 
@@ -30,15 +30,15 @@
   let given-opts = opts.named()
 
   // Ein Tippfehler in einer Stellschraube ist ein Fehler, kein stilles Nichts.
-  let unknown = given-opts.keys().filter(k => k not in defaults)
+  let unknown = given-opts.keys().filter(k => k not in _c.defaults)
   if unknown.len() > 0 {
     panic(
-      "Unbekannte Stellschraube: " + unknown.join(", ") + ". Bekannt sind: " + defaults.keys().join(", "),
+      "Unbekannte Stellschraube: " + unknown.join(", ") + ". Bekannt sind: " + _c.defaults.keys().join(", "),
     )
   }
 
-  let c = derive(defaults + given-opts)
-  cfg.update(c)
+  let c = _c.derive(_c.defaults + given-opts)
+  _c.cfg.update(c)
 
   // ── PDF-Identität ──────────────────────────────────────────
   set document(
@@ -68,7 +68,7 @@
   set text(
     font: c.font,
     size: c.font-size.prose,
-    fill: body-fill,
+    fill: _p.body-fill,
     lang: c.lang,
     region: c.region,
     hyphenate: true,

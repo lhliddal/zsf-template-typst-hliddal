@@ -1,6 +1,6 @@
 # ZSF Template (Typst) — AGENTS.md
 
-> ERZEUGT — rules-hash:d67f5cfa6f73feae
+> ERZEUGT — rules-hash:b1360bac3d8c958e
 >
 > Quelle: `rules/*.md`. Nicht direkt bearbeiten.
 > Ändern: `rules/*.md` editieren → `make sync-rules`. Drift: `make check-rules`.
@@ -147,9 +147,17 @@ strukturell getrennt statt durch Marker im selben Text:
 |---|---|
 | `lib.typ`, `src/` | das System — die einzige Stelle mit Gestaltung |
 | `template/` | was ein Fach-Fork bekommt (`typst init` kopiert nur das) |
-| `showcase/` | der Katalog: jeder Baustein real gesetzt, bleibt im Template |
+| `showcase/` | die Referenz: jeder Baustein im Fluss einer echten ZSF |
+| `catalog/` | dieselben Bausteine nebeneinander, mit ID und Mustertext |
 | `fonts/` | Carlito und NewCM Sans Math, mitgeliefert |
 | `tests/`, `rules/` | Harness und Regelwerk |
+
+**Zwei Dokumente.** `showcase/` zeigt die Bausteine im Fluss einer echten ZSF
+und ist die Grundlage von `make coverage`. `catalog/` reiht dieselben Bausteine
+mit **identischem Mustertext** nebeneinander, jeder mit einer ID (»D-11 raus«
+genügt als Auftrag) — ein Arbeitsinstrument fürs Aussortieren, das nichts prüft
+und von nichts geprüft wird. Sein Inventar liest die API beim Bauen aus dem
+Quelltext und kann nicht veralten.
 
 Ein Fork entsteht mit `make fork NAME=zsf-fach-fs2026`. Er enthält `main.typ`,
 `chapters/`, `graphics/` und ein eigenes Makefile — sonst nichts. Weil der
@@ -207,8 +215,8 @@ pro Stelle über einen Regler am Baustein (`20_bausteine`) — oder gar nicht.
 )
 ```
 
-Ein unbekannter Name bricht den Build und nennt die bekannten. Ein Regler ohne
-Wirkung ebenso — `make check` prüft jede einzelne Schraube am gerenderten Satz.
+Ein unbekannter Name bricht den Build und nennt die bekannten; `make check`
+prüft zusätzlich jede Schraube am gerenderten Satz auf Wirkung.
 
 ## Identität
 
@@ -231,15 +239,13 @@ Wirkung ebenso — `make check` prüft jede einzelne Schraube am gerenderten Sat
 | `density-text` | `1.0` | nur der Absatzabstand im Fliesstext |
 | `density-tables` | `1.0` | nur Zell- und Zeilenabstand |
 
-**Drei Hebel, drei Fragen — bewusst nicht einer.** Sie sind getrennt, weil
-unterschiedlich riskant: Abstände sind Leerraum und vertragen jede Skalierung,
-die Zeilenhöhe enthält die Schrift selbst. Reihenfolge beim Platzsparen:
-`size` (grösster Hebel), dann `density`, zuletzt `leading` — und danach das PDF
-auf kollidierende Formelzeilen prüfen.
+**Reihenfolge beim Platzsparen:** `size` (grösster Hebel), dann `density`,
+zuletzt `leading` — danach das PDF auf kollidierende Formelzeilen prüfen. Die
+drei sind getrennt, weil unterschiedlich riskant: Abstände vertragen jede
+Skalierung, die Zeilenhöhe enthält die Schrift selbst.
 
-Die Bereichsfaktoren multiplizieren den globalen Faktor für **ihren** Bereich.
-Sie sind für ZSF gedacht, die ungleich verteilt sind: eine box-lastige will
-engere Polsterung bei unangetastetem Fliesstext, eine textlastige das Gegenteil.
+Die Bereichsfaktoren multiplizieren den globalen Faktor für **ihren** Bereich —
+für ZSF, die ungleich verteilt sind.
 
 ## Seite und Schrift
 
@@ -280,9 +286,8 @@ nicht. Pro Stelle sticht ein `image(…, height: …)` die Vorbelegung.
 #baustein(regler: wert)[…][…]  // Regler sind benannte Argumente
 ```
 
-Die Reihenfolge der Regler ist bedeutungslos, und ein unbekannter Name bricht
-den Build. Beides folgt aus der Sprache und ist nichts, was das Template
-zusichern müsste.
+Die Reihenfolge der Regler ist bedeutungslos, ein unbekannter Name bricht den
+Build.
 
 ## Katalog
 
@@ -305,8 +310,8 @@ zusichern müsste.
 | Reiner Fliesstext | ein Absatz — kein Baustein nötig |
 
 `warn`, `formula`, `picture`, `steps` und `code` sind **Vorbelegungen von
-`panel`**, je eine Zeile. Ein Name kommt nur dazu, wenn er eine eigene Absicht
-trägt *und* eine Vorbelegung mitbringt, die man sonst komponieren müsste.
+`panel`**. Ein Name kommt nur dazu, wenn er eine eigene Absicht trägt *und*
+eine Vorbelegung, die man sonst komponieren müsste.
 
 ## Die Regler
 
@@ -329,10 +334,9 @@ Rahmenstärken, Balken und Tabellenkopf werden daraus in OKLCH abgeleitet. Es
 gibt keine Ton-Deklaration mit Pflichtrollen mehr.
 
 **Wie laut was ist, liegt fest:** Der Titelbalken einer Box ist *hell mit
-dunkler Schrift*, ihr Rumpf fast weiss. Gesättigt sind nur die Kapitel- und
-Abschnittsbalken, die Tabellenkopfzeile und der Warn-Ton — die vier Stellen,
-die von weitem gefunden werden müssen. Wer eine Box lauter haben will, hat
-meistens den falschen Baustein gewählt.
+dunkler Schrift*, ihr Rumpf fast weiss. Gesättigt sind nur Kapitel- und
+Abschnittsbalken, Tabellenkopf und der Warn-Ton — die vier Stellen, die von
+weitem gefunden werden müssen.
 
 `tone: "neutral"` heisst »gehört nicht zum Kapitelthema« (Konvention, Legende).
 `weight: "quiet"` heisst »kompakt und dezent«. Beides sind Antworten auf eine
@@ -381,8 +385,8 @@ Inhaltsfrage, nicht auf »welche Box nehme ich«.
 #newcol()                    // bewusster Spaltenumbruch, vor die Überschrift
 ```
 
-Es gibt keine Strukturmakros mehr. Dadurch bringen Kapitel Gliederung,
-PDF-Lesezeichen und die Nummern für das Register von selbst mit.
+Kapitel bringen dadurch Gliederung, PDF-Lesezeichen und die Registernummern
+von selbst mit.
 
 `short:` bei `front` ist der Kurz-Wegweiser, der im Register an der Stelle
 einer Abschnittsnummer erscheint — ein Front-Kapitel hat keine.
@@ -458,11 +462,10 @@ Grösse, ein Gesetz, eine Regel, ein Verfahren, ein Objekt. An dem *einen* Ort,
 wo es definiert oder anwendbar ist, nicht bei jeder Erwähnung. Massstab ist
 Auffindbarkeit unter Zeitdruck, nicht Vollständigkeit.
 
-**Was das Register besonders wertvoll macht,** ist das Treffen der Wörter, die
-jemand tatsächlich sucht: Abkürzungen (`idx-see("DGL", "Differentialgleichung")`),
-Eponyme in beide Richtungen, Einheiten und Symbole auf den Sachbegriff, die
-Nominalform zu einem nur adjektivisch erwähnten Konzept, und typische
-»wie mache ich X«-Suchen.
+**Der grösste Hebel** ist das Treffen der Wörter, die jemand tatsächlich sucht:
+Abkürzungen (`idx-see("DGL", "Differentialgleichung")`), Eponyme in beide
+Richtungen, Einheiten und Symbole auf den Sachbegriff, die Nominalform zu einem
+nur adjektivisch erwähnten Konzept, typische »wie mache ich X«-Suchen.
 
 `kw` nur auf **Begriffe** anwenden, nie auf ganze Sätze — sonst landet der Satz
 als Registereintrag.
@@ -570,12 +573,15 @@ Bindestrich im Mathe-Modus ein Minuszeichen ist.
 ## Befehle
 
 ```bash
-make build      # Katalog bauen (im Fork: die ZSF)
+make build      # Referenz-Implementierung (im Fork: die ZSF)
 make watch      # live nachbauen, während geschrieben wird
+make catalog    # Baustein-Katalog — nach jeder Änderung an der API
 make check      # der ganze Harness — vor jedem Commit
 make fork NAME=zsf-fach-fs2026
 make sync-rules # rules/*.md → AGENTS.md
 ```
+
+`make check` meldet einen gegenüber `src/` veralteten Katalog.
 
 **Erledigt ist eine Aufgabe erst nach erfolgreichem `make build`** — mit genau
 diesem Befehl. Innerhalb einer Aufgabe wird nach abgeschlossenen Einheiten

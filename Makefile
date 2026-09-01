@@ -6,6 +6,11 @@
 SHELL      := /bin/bash
 PKG_NAME   := zsf
 PKG_VER    := 0.1.0
+# Zwei Dokumente, zwei Zwecke (rules/10_architektur):
+#   showcase/ → die Referenz-Implementierung, im Fluss einer echten ZSF
+#   catalog/  → alle Bausteine nebeneinander, zum Aussortieren
+SHOWCASE   := template_fs0000_hliddal.pdf
+CATALOG    := katalog.pdf
 PKG_DIR    := $(HOME)/Library/Application Support/typst/packages/local/$(PKG_NAME)/$(PKG_VER)
 ROOT       := $(CURDIR)
 
@@ -18,18 +23,30 @@ RELEASE_ID ?= DEV-$(BUILD_DATE)
 BUILD_ID   := $(shell date -u +%Y%m%dT%H%M%SZ)-$(shell git rev-parse --short HEAD 2>/dev/null || echo nogit)
 TYPST_ARGS := --root $(ROOT) --input release=$(RELEASE_ID) --input build=$(BUILD_ID)
 
-.PHONY: all build watch fonts check test errors lint knobs coverage identity install fork thumbnail fmt sync-rules check-rules clean help
+.PHONY: all build watch catalog catalog-status fonts check test errors lint knobs coverage identity install fork thumbnail fmt sync-rules check-rules clean help
 
 all: build
 
-## build — Katalog (Living Showcase) bauen
+## build — die Referenz-Implementierung bauen
 build: install
-	@typst compile showcase/main.typ katalog.pdf $(TYPST_ARGS)
-	@echo "katalog.pdf — $$(typst --version)"
+	@typst compile showcase/main.typ $(SHOWCASE) $(TYPST_ARGS)
+	@echo "$(SHOWCASE) — $$(typst --version)"
 
-## watch — Katalog live nachbauen
+## watch — Referenz live nachbauen
 watch: install
-	@typst watch showcase/main.typ katalog.pdf $(TYPST_ARGS)
+	@typst watch showcase/main.typ $(SHOWCASE) $(TYPST_ARGS)
+
+## catalog — den Baustein-Katalog bauen (Arbeitsinstrument, kein Prüfgegenstand)
+catalog: install
+	@typst compile catalog/main.typ $(CATALOG) $(TYPST_ARGS)
+	@echo "$(CATALOG) — $$(pdfinfo $(CATALOG) 2>/dev/null | awk '/^Pages/{print $$2" Seiten"}')"
+
+## catalog-status — ist der Katalog noch aktuell?
+catalog-status:
+	@if [ ! -f $(CATALOG) ]; then echo "Katalog: $(CATALOG) fehlt — 'make catalog'."; \
+	elif [ -n "$$(find catalog src lib.typ -newer $(CATALOG) -print -quit 2>/dev/null)" ]; then \
+	  echo "Katalog: $(CATALOG) ist VERALTET — 'make catalog'."; \
+	else echo "Katalog: $(CATALOG) aktuell."; fi
 
 ## install — Package unter @local/zsf verfügbar machen (Symlink auf dieses Repo)
 install:
@@ -50,6 +67,7 @@ fonts:
 
 ## check — der ganze Harness
 check: build test errors lint knobs coverage identity check-rules
+	@$(MAKE) -s catalog-status
 	@echo "check: alles grün"
 
 ## test — Zusicherungen über die reinen Funktionen
@@ -74,7 +92,7 @@ coverage:
 
 ## identity — PDF-Metadaten nach dem Build
 identity: build
-	@bash tests/identity.sh katalog.pdf "$(RELEASE_ID)"
+	@bash tests/identity.sh $(SHOWCASE) "$(RELEASE_ID)"
 
 ## sync-rules — rules/*.md → AGENTS.md
 sync-rules:
@@ -94,7 +112,7 @@ fmt:
 
 ## clean — erzeugte Dateien entfernen
 clean:
-	@rm -f katalog.pdf thumbnail.png tests/out-unit.pdf
+	@rm -f $(SHOWCASE) $(CATALOG) thumbnail.png tests/out-unit.pdf
 	@rmdir tests/out 2>/dev/null || true
 
 help:

@@ -1,10 +1,14 @@
 // =============================================================
-// Living Showcase — jeder Baustein und jeder Regler, real gesetzt
+// Living Showcase — jeder Baustein im Fluss einer echten ZSF
 // =============================================================
 //
-// Dieses Dokument ist die Referenz-Implementierung: Was `styles/README` und
-// `rules/` behaupten, steht hier gesetzt daneben. `make check` baut es und
-// prüft, dass jeder öffentliche Name darin vorkommt.
+// Dieses Dokument ist die Referenz-Implementierung: Was `rules/` behauptet,
+// steht hier gesetzt daneben. `make check` baut es und prüft, dass jeder
+// öffentliche Name darin vorkommt.
+//
+// Nicht zu verwechseln mit `catalog/`: Dort stehen dieselben Bausteine mit
+// identischem Mustertext nebeneinander, zum Aussortieren. Hier stehen sie im
+// Fluss, so wie eine Fach-ZSF sie benutzt.
 //
 // Ein Fach-Fork enthält es NICHT — `typst init @local/zsf` kopiert nur
 // `template/`.
@@ -12,7 +16,7 @@
 #import "@local/zsf:0.1.0": *
 
 #show: zsf.with(
-  title: "ZSF Template — Katalog",
+  title: "ZSF Template",
   author: "Loris Hliddal",
   subject: "Referenz-Implementierung",
   release: sys.inputs.at("release", default: "DEV"),

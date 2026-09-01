@@ -17,8 +17,8 @@ pro Stelle über einen Regler am Baustein (`20_bausteine`) — oder gar nicht.
 )
 ```
 
-Ein unbekannter Name bricht den Build und nennt die bekannten. Ein Regler ohne
-Wirkung ebenso — `make check` prüft jede einzelne Schraube am gerenderten Satz.
+Ein unbekannter Name bricht den Build und nennt die bekannten; `make check`
+prüft zusätzlich jede Schraube am gerenderten Satz auf Wirkung.
 
 ## Identität
 
@@ -41,15 +41,13 @@ Wirkung ebenso — `make check` prüft jede einzelne Schraube am gerenderten Sat
 | `density-text` | `1.0` | nur der Absatzabstand im Fliesstext |
 | `density-tables` | `1.0` | nur Zell- und Zeilenabstand |
 
-**Drei Hebel, drei Fragen — bewusst nicht einer.** Sie sind getrennt, weil
-unterschiedlich riskant: Abstände sind Leerraum und vertragen jede Skalierung,
-die Zeilenhöhe enthält die Schrift selbst. Reihenfolge beim Platzsparen:
-`size` (grösster Hebel), dann `density`, zuletzt `leading` — und danach das PDF
-auf kollidierende Formelzeilen prüfen.
+**Reihenfolge beim Platzsparen:** `size` (grösster Hebel), dann `density`,
+zuletzt `leading` — danach das PDF auf kollidierende Formelzeilen prüfen. Die
+drei sind getrennt, weil unterschiedlich riskant: Abstände vertragen jede
+Skalierung, die Zeilenhöhe enthält die Schrift selbst.
 
-Die Bereichsfaktoren multiplizieren den globalen Faktor für **ihren** Bereich.
-Sie sind für ZSF gedacht, die ungleich verteilt sind: eine box-lastige will
-engere Polsterung bei unangetastetem Fliesstext, eine textlastige das Gegenteil.
+Die Bereichsfaktoren multiplizieren den globalen Faktor für **ihren** Bereich —
+für ZSF, die ungleich verteilt sind.
 
 ## Seite und Schrift
 

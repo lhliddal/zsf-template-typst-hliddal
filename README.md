@@ -10,10 +10,17 @@ vielen Reglern. Kapitel enthalten Inhalt und sonst nichts.
 
 ```bash
 make install                       # Package unter @local/zsf bereitstellen
-make build                         # Katalog bauen  → katalog.pdf
+make build                         # Referenz  → template_fs0000_hliddal.pdf
+make catalog                       # Katalog   → katalog.pdf
 make watch                         # live nachbauen
 make fork NAME=zsf-analysis2-fs2026
 ```
+
+**Zwei Dokumente.** Die *Referenz* führt jeden Baustein im Fluss einer echten
+ZSF vor und ist die Grundlage der Coverage-Prüfung. Der *Katalog* reiht
+dieselben Bausteine mit identischem Mustertext nebeneinander, jeder mit einer
+ID — ein Arbeitsinstrument fürs Aussortieren, das nichts prüft und von nichts
+geprüft wird. Sein Inventar liest die API beim Bauen aus dem Quelltext.
 
 Ein Fork enthält `main.typ`, `chapters/`, `graphics/` und ein Makefile — sonst
 nichts. Der Katalog bleibt hier.
@@ -71,7 +78,8 @@ und landen damit automatisch im Register.
 **Stellschrauben** — 24 benannte Argumente von `zsf(...)`, von `size` und
 `density` bis `palette` und `columns`. Ein Tippfehler bricht den Build.
 
-Vollständig gesetzt im Katalog (`make build`), beschrieben in `rules/`.
+Vollständig gesetzt in der Referenz (`make build`), nebeneinander im Katalog
+(`make catalog`), beschrieben in `rules/`.
 
 ## Prüfen
 
@@ -99,7 +107,8 @@ lib.typ        die öffentliche API — das Einzige, was ein Kapitel importiert
 src/           das System: config, palette, structure, blocks, tables,
                media, markup, maths, index
 template/      was ein Fork bekommt
-showcase/      der Katalog
+showcase/      die Referenz-Implementierung
+catalog/       der Baustein-Katalog
 fonts/         Carlito (OFL) und NewCM Sans Math (GUST)
 rules/         das Regelwerk für KI-Agenten → AGENTS.md
 tests/         der Harness

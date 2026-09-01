@@ -24,7 +24,9 @@ names="$names
 zsf"
 
 # Namen, die kein Kapitel aufruft, sondern die Bibliothek intern braucht.
-internal="derive cfg conf defaults seeds tone-of accent-for body-fill math-marks quantity-colors current-accent chapter-tone image-budget ink"
+# `tone-of` ist öffentlich, wird aber nur von einer Palette-Übersicht gebraucht
+# und nicht von einem Fach-Kapitel — es steht deshalb im Katalog, nicht im Fluss.
+internal=""
 
 # Wird der Name irgendwo aufgerufen? Zwei Muster statt eines mit »^« in einer
 # Gruppe: BSD-grep wertet den Anker dort unzuverlässig aus, und ein Verifier,

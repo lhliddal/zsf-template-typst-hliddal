@@ -11,9 +11,17 @@ strukturell getrennt statt durch Marker im selben Text:
 |---|---|
 | `lib.typ`, `src/` | das System — die einzige Stelle mit Gestaltung |
 | `template/` | was ein Fach-Fork bekommt (`typst init` kopiert nur das) |
-| `showcase/` | der Katalog: jeder Baustein real gesetzt, bleibt im Template |
+| `showcase/` | die Referenz: jeder Baustein im Fluss einer echten ZSF |
+| `catalog/` | dieselben Bausteine nebeneinander, mit ID und Mustertext |
 | `fonts/` | Carlito und NewCM Sans Math, mitgeliefert |
 | `tests/`, `rules/` | Harness und Regelwerk |
+
+**Zwei Dokumente.** `showcase/` zeigt die Bausteine im Fluss einer echten ZSF
+und ist die Grundlage von `make coverage`. `catalog/` reiht dieselben Bausteine
+mit **identischem Mustertext** nebeneinander, jeder mit einer ID (»D-11 raus«
+genügt als Auftrag) — ein Arbeitsinstrument fürs Aussortieren, das nichts prüft
+und von nichts geprüft wird. Sein Inventar liest die API beim Bauen aus dem
+Quelltext und kann nicht veralten.
 
 Ein Fork entsteht mit `make fork NAME=zsf-fach-fs2026`. Er enthält `main.typ`,
 `chapters/`, `graphics/` und ein eigenes Makefile — sonst nichts. Weil der

@@ -14,8 +14,8 @@ purpose: Überschriften, Marker, Verweise, Farbe, Register
 #newcol()                    // bewusster Spaltenumbruch, vor die Überschrift
 ```
 
-Es gibt keine Strukturmakros mehr. Dadurch bringen Kapitel Gliederung,
-PDF-Lesezeichen und die Nummern für das Register von selbst mit.
+Kapitel bringen dadurch Gliederung, PDF-Lesezeichen und die Registernummern
+von selbst mit.
 
 `short:` bei `front` ist der Kurz-Wegweiser, der im Register an der Stelle
 einer Abschnittsnummer erscheint — ein Front-Kapitel hat keine.
@@ -91,11 +91,10 @@ Grösse, ein Gesetz, eine Regel, ein Verfahren, ein Objekt. An dem *einen* Ort,
 wo es definiert oder anwendbar ist, nicht bei jeder Erwähnung. Massstab ist
 Auffindbarkeit unter Zeitdruck, nicht Vollständigkeit.
 
-**Was das Register besonders wertvoll macht,** ist das Treffen der Wörter, die
-jemand tatsächlich sucht: Abkürzungen (`idx-see("DGL", "Differentialgleichung")`),
-Eponyme in beide Richtungen, Einheiten und Symbole auf den Sachbegriff, die
-Nominalform zu einem nur adjektivisch erwähnten Konzept, und typische
-»wie mache ich X«-Suchen.
+**Der grösste Hebel** ist das Treffen der Wörter, die jemand tatsächlich sucht:
+Abkürzungen (`idx-see("DGL", "Differentialgleichung")`), Eponyme in beide
+Richtungen, Einheiten und Symbole auf den Sachbegriff, die Nominalform zu einem
+nur adjektivisch erwähnten Konzept, typische »wie mache ich X«-Suchen.
 
 `kw` nur auf **Begriffe** anwenden, nie auf ganze Sätze — sonst landet der Satz
 als Registereintrag.
