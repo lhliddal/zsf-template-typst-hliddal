@@ -11,8 +11,8 @@
 // sobald es auf einer Fläche steht, die ihre eigene Textfarbe setzt.
 
 #import "config.typ": conf
-#import "palette.typ": ink, danger-color, math-marks, quantity-colors, tone-of
-#import "structure.typ": accent-for
+#import "palette.typ": ink, danger-color, math-marks, quantity-colors, tone-of, ink-faint
+#import "structure.typ": accent-for, ref-target
 #import "index.typ": idx
 
 /// Fachbegriff — der primäre Scan-Anker. Landet automatisch im Register.
@@ -56,34 +56,34 @@
 // ── Verweise ─────────────────────────────────────────────────
 // Ein Verweis ins Leere ist ein Fehler, kein rotes Fragezeichen im PDF —
 // im Vorgänger brauchte es dafür einen eigenen Verifier.
-#let _target-number(label-name) = {
+#let _target(label-name) = {
   let hits = query(label-name)
   if hits.len() == 0 {
     panic("Verweisziel " + repr(label-name) + " gibt es nicht.")
   }
-  counter(heading).at(hits.first().location())
+  // Ein Ziel im Front-Matter hat keine Nummer; `ref-target` liefert dann
+  // dessen Kurzlabel. Beide Verweisformen teilen sich das mit dem Register —
+  // getrennt gepflegt kannte nur das Register den Fall, und `xref` nannte
+  // still die Nummer des vorhergehenden Kapitels.
+  ref-target(hits.first().location())
 }
 
 /// Querverweis »(→ 6.6)« in der Farbe des Zielkapitels.
 #let xref(target) = context {
-  let c = conf()
-  let nums = _target-number(target)
-  let accent = accent-for(nums.first(), c.palette)
-  link(target, ink(accent, [(#sym.arrow.r #nums.map(str).join("."))]))
+  let d = _target(target)
+  link(target, ink(d.accent, [(#sym.arrow.r #d.body)]))
 }
 
 /// Kompakte, klickbare Zielnummer ohne Pfeil — für lokale Inhaltsübersichten.
 #let secref(target) = context {
-  let c = conf()
-  let nums = _target-number(target)
-  let accent = accent-for(nums.first(), c.palette)
-  link(target, ink(accent, nums.map(str).join(".")))
+  let d = _target(target)
+  link(target, ink(d.accent, d.body))
 }
 
 /// Verweis auf die Skript-Seite.
 #let script-ref(page) = context text(
   size: conf().font-size.note,
-  fill: luma(45%),
+  fill: ink-faint,
 )[(S.#page)]
 
 // ── Formel-Marker ────────────────────────────────────────────
@@ -100,9 +100,15 @@
 /// Grössenfarbe: eine Farbe gehört im ganzen Dokument EINER Grösse.
 /// Vergabe in `zsf(quantities: ("Kraft": 0, "Moment": 4))`.
 #let quantity(name, body) = context {
-  let q = conf().quantities
-  if name not in q {
-    panic("Unbekannte Grösse »" + name + "«. Vergeben in zsf(quantities: …): " + q.keys().join(", "))
+  let c = conf()
+  if name not in c.quantities {
+    panic(
+      "Unbekannte Grösse »" + name + "«. Vergeben in zsf(quantities: …): "
+        + c.quantities.keys().join(", "),
+    )
   }
-  ink(quantity-colors.at(calc.rem(q.at(name), quantity-colors.len())), body)
+  // `quantity-colors: false` nimmt für den S/W-Druck die Farbe zurück, ohne
+  // die Vergabe anzutasten — der Satz bleibt sonst Zeichen für Zeichen gleich.
+  if not c.quantity-colors { return body }
+  ink(quantity-colors.at(calc.rem(c.quantities.at(name), quantity-colors.len())), body)
 }

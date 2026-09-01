@@ -33,7 +33,8 @@ Strip-Skript und keinen Verifier dafür.
 | Datei | Inhalt |
 |---|---|
 | `config.typ` | die Stellschrauben, ihre Vorbelegungen und **alle** abgeleiteten Masse |
-| `palette.typ` | die 18 Kapitel-Slots, die Ton-Ableitung, der Ink-Vertrag |
+| `palette.typ` | die 18 Kapitel-Slots, Ton-Ableitung, Ink-Vertrag, gedämpfte Tinte |
+| `knobs.typ` | Reglerwerte nachschlagen, unbekannte Regler abweisen |
 | `structure.typ` | Balken, Kapitelfarbe, `front`, `newcol`, Kopf und Fuss |
 | `blocks.typ` | die Box und ihre Vorbelegungen, Trenner, Listen, Ketten |
 | `tables.typ` | `tabular` |
@@ -41,6 +42,11 @@ Strip-Skript und keinen Verifier dafür.
 | `markup.typ` | Inline-Marker, Verweise, Formel-Marker, Grössenfarben |
 | `maths.typ` | die Operatoren, die Typst nicht mitbringt |
 | `index.typ` | Register: Eintrag, Sortierung, Ausgabe |
+
+**Farbe gehört nach `palette.typ`, ein Reglerwert in eine Tabelle.** Beides
+meldet der Linter bzw. `pick(name, wert, tabelle)` selbst: Nachschlagen **ist**
+die Prüfung, und eine if-Kette gäbe einem unbekannten Wert still die
+Vorbelegung.
 
 **Masse haben genau eine Rechenstelle.** Jede Länge wird in `config.typ` aus
 den Stellschrauben gerechnet. Ein hartes `pt`/`mm`-Mass in einem anderen Modul

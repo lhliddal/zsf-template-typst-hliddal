@@ -13,13 +13,23 @@ Namen; ein wirkungsloser Regler ist damit ausgeschlossen.
   title: [Grösse und Dichte], cols: (1, 0.5, 1.5), font: "dense",
   [Name], [Vorbelegung], [Wirkung],
   [`size`], [8pt], [Grundgrösse; nimmt den ganzen Satz mit],
+  [`content-scale`], [1.0], [wie laut der Bausteininhalt neben den Balken steht],
   [`prose-scale`], [1.0], [wie laut die Prosa neben den Bausteinen steht],
   [`leading`], [1.0], [Zeilenhöhe; enthält die Schrift, klein schrittweise],
   [`density`], [1.0], [alles Vertikale, das reiner Leerraum ist],
   [`density-blocks`], [1.0], [nur die Innen- und Aussenabstände der Boxen],
   [`density-text`], [1.0], [nur der Absatzabstand im Fliesstext],
   [`density-tables`], [1.0], [nur Zell- und Zeilenabstand],
+  [`density-structure`], [1.0], [nur Balken und ihr Abstand zum Inhalt],
 )
+
+#after[
+  Die beiden Rollen-Faktoren sind Gegenstücke: `content-scale` trifft alles
+  **in** einem Baustein, `prose-scale` den Text, der zu **keinem** gehört.
+  Balken und Titel bleiben bei beiden stehen. `content-scale` ist der Regler,
+  wenn der Inhalt an eine #hl[Breite] stösst — ob eine Formel in einer
+  zweispaltigen Zelle einzeilig bleibt, entscheidet er allein.
+]
 
 #tabular(
   title: [Seite, Schrift, Farbe], cols: (1, 0.5, 1.5), font: "dense",
@@ -32,6 +42,7 @@ Namen; ein wirkungsloser Regler ist damit ausgeschlossen.
   [`justify`], [false], [Blocksatz statt Flattersatz],
   [`palette`], [18 Slots], [die Kapitelfarben],
   [`quantities`], [–], [Grössenfarben des Fachs],
+  [`quantity-colors`], [true], [`false` für den S/W-Druck, ohne die Vergabe anzutasten],
   [`index-pages`], [true], [Register zeigt zusätzlich die Druckseite],
 )
 

@@ -73,6 +73,10 @@ Inhaltsfrage, nicht auf »welche Box nehme ich«.
 - **Blockwechsel:** `sep()` trennt zwei Blöcke **innerhalb** einer Box,
   `sep(label: [Fall B])` benennt den folgenden. Wer stattdessen eine zweite Box
   danebenstellt, hat den Trenner nicht gefunden.
+- **Der Ton gilt nach innen.** Was in einer Box steht, kennt ihren Ton: Der
+  Trenner einer Warn-Box ist rot, die Glieder einer `steps(tone: "warn")` sind
+  es auch. Es gibt dafür nichts zu setzen — `tone` an der Box genügt, und ein
+  Baustein darin braucht ihn nicht ein zweites Mal.
 - **Anmerkungen:** `note[…]` als dezente Zeile unter einer Formel.
 - **Text an eine Box binden:** `before[…]` gehört zur folgenden Box,
   `after[…]` zur vorhergehenden.

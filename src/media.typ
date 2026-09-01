@@ -13,6 +13,7 @@
 // ausdrückliche Angabe eine Set-Regel immer schlägt.
 
 #import "config.typ": conf
+#import "palette.typ": ink-muted
 #import "blocks.typ": panel, split
 
 /// Bindet die Bildhöhe an das Budget des Containers.
@@ -27,23 +28,18 @@
   let c = conf()
   block(above: c.space.xs, below: 0pt, width: 100%, align(
     center,
-    text(size: c.font-size.note, fill: luma(35%), body),
+    text(size: c.font-size.note, fill: ink-muted, body),
   ))
 }
 
 /// Die eigenständige Abbildung. Mehrere Bilder ergeben eine Reihe.
 ///
 ///   #fig(image("graphics/skizze.svg"), cap: [Aufbau])
-#let fig(..args) = context {
+#let fig(..args, cap: none, height: auto) = context {
   let c = conf()
-  let named = args.named()
-  let cap = named.at("cap", default: none)
-  let height = named.at("height", default: auto)
-  let box-args = named
-  for k in ("cap", "height") {
-    if k in box-args { box-args.remove(k) }
-  }
-
+  // `cap` und `height` sind deklariert und damit gebunden, bevor der Sink
+  // greift — was in `args.named()` übrig bleibt, sind Box-Regler und geht
+  // unverändert an `panel`, das Unbekanntes abweist.
   let images = args.pos()
   let body = {
     image-budget(if height == auto { c.figure-height } else { height }, {
@@ -58,20 +54,12 @@
     })
     if cap != none { caption(cap) }
   }
-  panel(body, ..((surface: "plain", align: center) + box-args))
+  panel(body, ..((surface: "plain", align: center) + args.named()))
 }
 
 /// Bild links, Text rechts. `frame: "none"` macht daraus die rahmenlose Fassung.
-#let fig-side(picture, body, ..args) = context {
+#let fig-side(picture, body, ..args, ratio: 0.4, height: auto) = context {
   let c = conf()
-  let named = args.named()
-  let ratio = named.at("ratio", default: 0.4)
-  let height = named.at("height", default: auto)
-  let box-args = named
-  for k in ("ratio", "height") {
-    if k in box-args { box-args.remove(k) }
-  }
-
   panel(
     split(
       image-budget(if height == auto { c.figure-height } else { height }, picture),
@@ -79,6 +67,6 @@
       ratio: ratio,
       align: horizon,
     ),
-    ..((surface: "plain") + box-args),
+    ..((surface: "plain") + args.named()),
   )
 }

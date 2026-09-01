@@ -10,8 +10,9 @@
 // verzögerte Auflösung, einen Vor-Lauf und einen 1064-zeiligen Verifier.
 
 #import "config.typ": conf
-#import "palette.typ": tone-of, neutral-tone, warn-tone
-#import "structure.typ": chapter-tone, full-edges
+#import "knobs.typ": pick, reject-unknown
+#import "palette.typ": tone-of, neutral-tone, warn-tone, ink-muted
+#import "structure.typ": chapter-tone, active-tone, tone-stack, full-edges
 
 #let _align = align // vor der Verschattung durch den Parameter sichern
 
@@ -47,24 +48,31 @@
   "tag",
   "breakable",
 )
-#let _reject-unknown(args) = {
-  let unknown = args.named().keys().filter(k => k not in _knobs)
-  if unknown.len() > 0 {
-    panic(
-      "Unbekannter Regler: " + unknown.join(", ") + ". Bekannt sind: " + _knobs.join(", "),
-    )
-  }
-}
 
-#let _pad-x(c, pad) = {
-  if pad == "none" { 0pt } else if pad == "tight" { c.pad.x-tight } else if pad == "bar" { c.pad.bar-gap } else { c.pad.x }
-}
-#let _pad-y(c, pad) = {
-  if pad == "none" { 0pt } else if pad == "tight" { c.pad.y-tight } else { c.pad.y }
-}
-#let _frame(t, c, frame) = {
-  if frame == "none" { none } else if frame == "strong" { c.rule + t.frame-strong } else if frame == "hard" { c.rule + t.frame-hard } else { c.rule + t.frame-soft }
-}
+// Jeder Regler ist eine Tabelle: Nachschlagen IST die Prüfung. Als if-Kette
+// fiel ein falscher WERT hinten heraus und bekam die Vorbelegung — `pad:
+// "tigt"` polsterte normal, `weight: "quite"` liess die Kopfzeile ersatzlos
+// verschwinden. Beides ohne Meldung.
+#let _pad-x(c, pad) = pick("pad", pad, (
+  "normal": c.pad.x,
+  "tight": c.pad.x-tight,
+  "bar": c.pad.bar-gap,
+  "none": 0pt,
+))
+#let _pad-y(c, pad) = pick("pad", pad, (
+  "normal": c.pad.y,
+  "tight": c.pad.y-tight,
+  // Die Akzentkante ist eine waagrechte Angelegenheit; oben und unten bleibt
+  // die Polsterung normal.
+  "bar": c.pad.y,
+  "none": 0pt,
+))
+#let _frame(t, c, frame) = pick("frame", frame, (
+  "soft": c.rule + t.frame-soft,
+  "strong": c.rule + t.frame-strong,
+  "hard": c.rule + t.frame-hard,
+  "none": none,
+))
 
 // ── Die Box ──────────────────────────────────────────────────
 /// Der allgemeine Inhaltsbaustein.
@@ -87,19 +95,28 @@
   tag: none,
   breakable: false,
 ) = context {
-  _reject-unknown(args)
+  reject-unknown("dieser Box", args.named(), _knobs)
   let c = conf()
   let t = resolve-tone(tone)
   let (title, body) = _title-body(args)
 
   let px = _pad-x(c, pad)
   let py = _pad-y(c, pad)
-  let quiet = weight == "quiet"
+  // Prüft den Wert und liefert ihn zugleich aus.
+  let quiet = pick("weight", weight, ("loud": false, "quiet": true, "caption": false))
+  let body-size = pick("font", font, ("normal": c.font-size.body, "dense": c.font-size.dense))
+  if align not in (left, center, right) {
+    panic("Regler »align«: erwartet left, center oder right — nicht " + repr(align))
+  }
 
   // Fläche: der Baustein wählt die Rolle, der Ton die Farbe.
   // `auto` heisst: eine Box mit Titel trägt die (sehr blasse) laute Fläche,
   // eine ohne Titel bleibt weiss. Kräftig ist am Ende nur die Titelzeile.
-  let back = if surface == "plain" { white } else if surface == "quiet" { t.quiet } else if surface == "emphasis" { t.emphasis } else if quiet { t.quiet } else if title == none { t.quiet } else { t.loud }
+  let back = if surface == auto {
+    if quiet or title == none { t.quiet } else { t.loud }
+  } else {
+    pick("surface", surface, ("plain": white, "quiet": t.quiet, "emphasis": t.emphasis))
+  }
 
   let titled = title != none
   let head = if titled {
@@ -139,10 +156,16 @@
     fill: back,
     inset: (x: px, y: py),
     {
-      set text(size: c.font-size.dense) if font == "dense"
+      // Der Bausteininhalt steht auf `body`, nicht auf der Dokumentgrösse.
+      // Sonst zöge `prose-scale` den Boxinhalt mit — der Regler heisst aber
+      // »nur der verbindende Fliesstext«, und die Tabelle tat es schon richtig.
+      set text(size: body-size)
       set par(justify: false) if align == center
+      // Klammer um den Inhalt: Was in dieser Box steht, kennt ihren Ton.
+      tone-stack.update(s => s + (t,))
       if quiet { head }
       _align(align, body)
+      tone-stack.update(s => s.slice(0, -1))
     },
   )
 
@@ -217,7 +240,8 @@
 /// Trennt zwei Blöcke INNERHALB einer Box, wahlweise mit Beschriftung.
 #let sep(label: none) = context {
   let c = conf()
-  let t = chapter-tone()
+  // Der Ton der Box, in der dieser Trenner steht — nicht der des Kapitels.
+  let t = active-tone()
   block(above: c.space.s, below: c.space.s, width: 100%, {
     if label == none {
       line(length: 100%, stroke: c.rule + t.rule)
@@ -236,7 +260,7 @@
 /// Dezente Anmerkung unter einer Formel.
 #let note(body) = context {
   let c = conf()
-  block(above: c.space.xs, below: 0pt, text(size: c.font-size.note, fill: luma(35%), body))
+  block(above: c.space.xs, below: 0pt, text(size: c.font-size.note, fill: ink-muted, body))
 }
 
 /// Satz, der an die FOLGENDE Box gehört.
@@ -280,8 +304,12 @@
 #let facts(..args) = context {
   let c = conf()
   let named = args.named()
-  let t = resolve-tone(named.at("tone", default: auto))
+  // Ohne Titel entsteht keine Box — dann gibt es keinen Träger für die
+  // Box-Regler, und sie fielen vorher lautlos unter den Tisch. `tone` wirkt
+  // trotzdem, weil die Liste ihr Aufzählungszeichen selbst färbt.
   let (title, body) = _title-body(args)
+  reject-unknown("dieser Liste", named, if title == none { ("tone",) } else { _knobs })
+  let t = resolve-tone(named.at("tone", default: auto))
 
   let content = {
     set enum(indent: 0pt, body-indent: c.pad.x-tight, spacing: c.space.s)
@@ -310,9 +338,17 @@
   )
 }
 
-#let given(body) = context _pill(fill: chapter-tone().quiet, stroke: conf().rule + chapter-tone().frame-soft, body)
-#let step(body) = context _pill(color: luma(30%), body)
-#let target(body) = context _pill(fill: chapter-tone().emphasis, stroke: conf().rule + chapter-tone().frame-strong, color: chapter-tone().frame-hard, strong(body))
+// Auch die Glieder lesen den Ton ihrer Box: In `steps(tone: "warn")` waren
+// sie vorher kapitelfarben, obwohl die Box rot war.
+#let given(body) = context {
+  let t = active-tone()
+  _pill(fill: t.quiet, stroke: conf().rule + t.frame-soft, body)
+}
+#let step(body) = context _pill(color: ink-muted, body)
+#let target(body) = context {
+  let t = active-tone()
+  _pill(fill: t.emphasis, stroke: conf().rule + t.frame-strong, color: t.frame-hard, strong(body))
+}
 
 /// Herleitung / Fallunterscheidung.
 #let steps(..args) = _preset(panel, args, (align: center, pad: "tight", frame: "strong", surface: "plain"))

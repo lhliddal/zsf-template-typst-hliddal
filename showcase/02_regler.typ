@@ -23,6 +23,9 @@ Rumpf läuft. Kein Regler verwirft einen anderen.
 #panel(tone: "warn", frame: "strong")[Regler greifen unabhängig][
   `tone` wählt die Farbwelt, `frame` die Rahmenstärke. Beide zusammen, in
   beliebiger Reihenfolge.
+  #sep(label: [und nach innen])
+  Der Trenner über dieser Zeile trägt den Ton der Box, nicht den des Kapitels.
+  Dasselbe gilt für die Glieder einer Kette — `tone` an der Box genügt.
 ]
 
 == Fläche, Rahmen, Polsterung <sec:flaeche>

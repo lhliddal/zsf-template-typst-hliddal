@@ -26,6 +26,9 @@ scan() { # dateiglob  regex  regel  hinweis
   local files="$1" pattern="$2" rule="$3" hint="$4"
   while IFS=: read -r file line text; do
     [ -z "${file:-}" ] && continue
+    # Eine reine Kommentarzeile ist Dokumentation, kein Satzbefehl — dort steht
+    # gerade das Beispiel, das die Regel erklärt.
+    [[ "$(echo "$text" | sed 's/^[[:space:]]*//')" == //* ]] && continue
     # Vorzeile auf die Ausnahme prüfen
     local prev
     prev=$(sed -n "$((line - 1))p" "$file" 2>/dev/null)
@@ -64,6 +67,14 @@ scan "$(ls src/*.typ | grep -v config.typ | tr '\n' ' ')" \
   '[^0-9a-zA-Z_.]([1-9][0-9]*(\.[0-9]+)?|0\.[0-9]+)(pt|mm|cm)' \
   "hartes Mass ausserhalb von config.typ" \
   "als benanntes Mass nach config.typ, dort folgt es Dichte und Grundgrösse"
+
+# Dasselbe für Farbe. Ohne diese Regel standen sieben Grauwerte (30, 35, 40,
+# 45, 50, 55, 60 %) über fünf Dateien verstreut — jeder für sich plausibel,
+# gemeinsam heller stellen konnte sie niemand.
+scan "$(ls src/*.typ | grep -v palette.typ | tr '\n' ' ')" \
+  '(luma|rgb|cmyk|oklch|oklab)\(' \
+  "rohe Farbe ausserhalb von palette.typ" \
+  "als benanntes Token nach palette.typ (ink-muted, ink-faint, ink-ghost …)"
 
 if [ "$fail" -eq 0 ]; then
   echo "lint: ok"

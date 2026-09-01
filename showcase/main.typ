@@ -33,5 +33,5 @@
 #include "07_stellschrauben.typ"
 #include "08_palette.typ"
 
-#front("Stichwortverzeichnis", short: "Reg")
+#front("Stichwortverzeichnis", short: "Reg", anchor: <ch:register>)
 #make-index()

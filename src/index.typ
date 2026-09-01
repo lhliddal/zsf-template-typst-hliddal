@@ -11,7 +11,8 @@
 // das Register eine Abfrage darüber. Umlaute sortieren nach DIN 5007-1.
 
 #import "config.typ": conf
-#import "structure.typ": accent-for
+#import "structure.typ": ref-target
+#import "palette.typ": ink-muted, ink-faint, ink-ghost
 
 #let _mark = <zsf-index-entry>
 
@@ -46,19 +47,12 @@
 ]
 
 // ── Das Register ─────────────────────────────────────────────
-#let _locator(loc, c) = {
-  // Steht der Eintrag in einem Front-Kapitel, gibt es keine Nummer — dann
-  // zeigt das Register dessen Kurzlabel.
-  let heads = query(selector(heading.where(level: 1)).before(loc))
-  if heads.len() > 0 and heads.last().numbering == none {
-    let labels = query(selector(<zsf-front-label>).before(loc))
-    if labels.len() > 0 {
-      return text(fill: c.palette.first(), weight: "bold", labels.last().value)
-    }
-  }
-  let nums = counter(heading).at(loc)
-  let accent = accent-for(nums.first(), c.palette)
-  text(fill: accent, weight: "bold", nums.map(str).join("."))
+// Der Locator ist derselbe, den `xref` benutzt — Abschnittsnummer, oder das
+// Kurzlabel eines Front-Kapitels. Er steht in `structure.typ`, damit Register
+// und Verweis nicht auseinanderlaufen können.
+#let _locator(loc) = {
+  let d = ref-target(loc)
+  text(fill: d.accent, weight: "bold", d.body)
 }
 
 /// Setzt das Register. Gehört ans Dokumentende, unter ein `front`-Kapitel.
@@ -96,26 +90,26 @@
         above: c.space.m,
         below: c.space.xs,
         sticky: true,
-        text(weight: "bold", fill: luma(50%), size: c.font-size.body, letter),
+        text(weight: "bold", fill: ink-faint, size: c.font-size.body, letter),
       )
     }
 
     block(breakable: false, above: c.space.xs, below: c.space.xs, {
       entry.term
       h(0.35em)
-      box(width: 1fr, repeat(gap: 0.22em, text(fill: luma(75%))[.]))
+      box(width: 1fr, repeat(gap: 0.22em, text(fill: ink-ghost)[.]))
       h(0.35em)
       if entry.see != none {
         // Ein »siehe«-Eintrag trägt keine eigene Nummer — er schickt weiter.
-        text(style: "italic", fill: luma(40%))[siehe ]
+        text(style: "italic", fill: ink-faint)[siehe ]
         entry.see
       } else {
         let locs = entry.locs
-        locs.map(l => _locator(l, c)).join([, ])
+        locs.map(_locator).join([, ])
         // Die Druckseite nur bei genau einer Fundstelle: bei mehreren ist der
         // Abschnitt der schnellere Weg, und zwei Zahlenpaare lesen sich schlecht.
         if c.index-pages and locs.len() == 1 {
-          text(fill: luma(55%), size: c.font-size.note)[ · S.#locs.first().page()]
+          text(fill: ink-faint, size: c.font-size.note)[ · S.#locs.first().page()]
         }
       }
     })

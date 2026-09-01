@@ -27,6 +27,11 @@
   // box-lastigen ZSF trägt die Box den Prüfungsstoff und die Prosa verbindet
   // ihn — dann darf sie eine Stufe leiser stehen.
   prose-scale: 1.0,
+  // Das Gegenstück: wie laut der Bausteininhalt neben den Balken steht.
+  // Der Regler, wenn der Inhalt an eine BREITE stösst — ob eine Formel in
+  // einer zweispaltigen Tabellenzelle einzeilig bleibt, entscheidet die
+  // Inhaltsgrösse allein; über `size` gelöst schrumpfen die Balken mit.
+  content-scale: 1.0,
   // Zeilenhöhe. Enthält die Schrift selbst, deshalb ein eigener Regler und
   // nicht Teil der Dichte: Abstände vertragen jede Skalierung, Zeilen nicht.
   leading: 1.0,
@@ -39,6 +44,10 @@
   density-blocks: 1.0,
   density-text: 1.0,
   density-tables: 1.0,
+  // Die Gliederung hat einen eigenen Faktor, weil ihre Masse sonst am
+  // Block-Register hingen: Wer die Boxen enger stellt, rückte damit auch die
+  // Balken an ihre Überschriften — zwei Entscheidungen an einem Regler.
+  density-structure: 1.0,
 
   // ── Seite ──────────────────────────────────────────────────
   columns: 4,
@@ -62,6 +71,9 @@
   palette: seeds,
   // Grössenfarben des Fachs: ("Kraft": 0, "Moment": 4)
   quantities: (:),
+  // Nimmt für den S/W-Druck alle Grössenfarben zurück, ohne die Vergabe
+  // oben anzutasten.
+  quantity-colors: true,
 
   // ── Bausteine ──────────────────────────────────────────────
   // Zeigt das Register zusätzlich die Druckseite, nicht nur den Abschnitt?
@@ -80,6 +92,7 @@
   let blocks = d * c.density-blocks
   let tables = d * c.density-tables
   let texts = d * c.density-text
+  let struct = d * c.density-structure
 
   c + (
     // Die Abstandsskala zwischen Blöcken.
@@ -106,21 +119,37 @@
       y-tight: 1.2pt * tables * unit,
       y-roomy: 4.2pt * tables * unit,
     ),
+    // Gliederung: was ein Titelbalken an Raum nimmt und freihält. Eigenes
+    // Register, damit »Balken enger an den Text« und »Boxen enger« zwei
+    // Entscheidungen bleiben.
+    bar: (
+      pad-x: 4pt * struct * unit,
+      pad-y: 1.8pt * struct * unit,
+      above-chapter: 10pt * struct * unit,
+      above-section: 7pt * struct * unit,
+      above-subsection: 4pt * struct * unit,
+      below: 4pt * struct * unit,
+      below-subsection: 1pt * struct * unit,
+    ),
     // Absatzabstand im Fliesstext.
     par-space: 4.4pt * texts * unit,
     // Form.
     radius: 2.2pt * unit,
     rule: 0.5pt,
     // Schriftrollen, alle als Vielfaches der Grundgrösse.
+    // Drei Rollen, drei Fragen. `body` ist der Bausteininhalt, `prose` der
+    // Text dazwischen, und alles Übrige hängt direkt an der Grundgrösse —
+    // Balken und Titel bleiben deshalb stehen, wenn einer der beiden
+    // Rollen-Faktoren gedreht wird.
     font-size: (
-      body: c.size,
+      body: c.size * c.content-scale,
       prose: c.size * c.prose-scale,
       doc-title: c.size * 1.55, // Dokumentkopf
       chapter: c.size * 1.30,
       section: c.size * 1.06,
       subsection: c.size * 1.0,
       title: c.size * 1.0, // Box-Titel
-      dense: c.size * 0.88, // der `dense`-Regler
+      dense: c.size * c.content-scale * 0.88, // der `dense`-Regler
       note: c.size * 0.86, // Anmerkung, Bildunterschrift
       tag: c.size * 0.82, // Meta-Tag im Titel
       label: c.size * 0.80, // Diagramm-Beschriftung

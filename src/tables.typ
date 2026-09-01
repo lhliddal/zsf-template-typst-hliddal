@@ -10,6 +10,7 @@
 // dass man sie »halb« setzt, ist strukturell nicht mehr möglich.
 
 #import "config.typ": conf
+#import "knobs.typ": pick, reject-unknown
 #import "blocks.typ": panel, resolve-tone
 
 /// Tabelle, wahlweise als eigener Baustein mit Titel.
@@ -33,13 +34,28 @@
   align: left,
   breakable: false,
 ) = context {
+  // Alles Benannte ist oben deklariert und damit gebunden — was im Sink
+  // landet, ist ein Tippfehler. Ohne diese Zeile hiess `tabular(colss: …)`
+  // still »eine Spalte«: die Tabelle stand falsch, ohne dass etwas brach.
+  reject-unknown(
+    "dieser Tabelle",
+    cells.named(),
+    ("title", "cols", "header", "zebra", "grid", "rows", "colsep", "font", "tone", "align", "breakable"),
+  )
   let c = conf()
   let t = resolve-tone(tone)
   let n = cols.len()
 
   let columns = cols.map(w => if type(w) in (int, float) { w * 1fr } else { w })
-  let pad-x = if colsep == "tight" { c.cell.y } else { c.cell.x }
-  let pad-y = if rows == "roomy" { c.cell.y-roomy } else if rows == "tight" { c.cell.y-tight } else { c.cell.y }
+  let pad-x = pick("colsep", colsep, ("normal": c.cell.x, "tight": c.cell.y))
+  let pad-y = pick("rows", rows, (
+    "normal": c.cell.y,
+    "roomy": c.cell.y-roomy,
+    "tight": c.cell.y-tight,
+  ))
+  // Nur geprüft, gebraucht wird der Wert unten zweimal einzeln.
+  let _ = pick("grid", grid, ("both": 0, "horizontal": 1, "none": 2))
+  let cell-size = pick("font", font, ("normal": c.font-size.body, "dense": c.font-size.dense))
 
   // Die Kopfzeile sind die ersten Zellen — gezählt in SPALTEN, nicht in
   // Argumenten: Ein `table.cell(colspan: 2)` in der Kopfzeile ist eine Zelle,
@@ -77,22 +93,19 @@
       // der Box — sonst verschmelzen Boxtitel und Kopfzeile zu einem Block.
       if header and y == 0 { t.head-back } else if zebra and calc.odd(i) { t.zebra }
     },
-    ..if header and head-cells.len() > 0 {
-      (
-        table.header(
-          ..head-cells.map(h => if type(h) == content and h.func() == table.cell {
-            h
-          } else {
-            text(fill: t.head-text, weight: "bold", h)
-          }),
-        ),
-      )
-    } else { () },
+    ..if header and head-cells.len() > 0 { (table.header(..head-cells),) } else { () },
     ..body-cells,
   )
 
   let sized = {
-    set text(size: if font == "dense" { c.font-size.dense } else { c.font-size.body })
+    // Die Kopfschrift kommt aus einer SET-Regel, nicht aus einem `text()` um
+    // jede Zelle. Der Grund ist der Zellverbund: Eine Kopfzelle, die für einen
+    // `colspan` selbst ein `table.cell` ist, musste beim Umwickeln übersprungen
+    // werden (sonst läge sie in einem `text()` und wäre keine Zelle mehr) — und
+    // blieb dadurch schwarz auf der gesättigten Kopfzeile. Die Regel trifft
+    // beide Fälle und ist dazu kürzer.
+    show table.cell.where(y: 0): set text(fill: t.head-text, weight: "bold") if header
+    set text(size: cell-size)
     // Ein Bild muss in die Zeile passen; das Budget gehört dem Container.
     set image(height: c.image-height, fit: "contain")
     table-content

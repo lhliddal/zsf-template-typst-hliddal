@@ -1,6 +1,6 @@
 # ZSF Template (Typst) — AGENTS.md
 
-> ERZEUGT — rules-hash:b1360bac3d8c958e
+> ERZEUGT — rules-hash:a48f8638c774085f
 >
 > Quelle: `rules/*.md`. Nicht direkt bearbeiten.
 > Ändern: `rules/*.md` editieren → `make sync-rules`. Drift: `make check-rules`.
@@ -169,7 +169,8 @@ Strip-Skript und keinen Verifier dafür.
 | Datei | Inhalt |
 |---|---|
 | `config.typ` | die Stellschrauben, ihre Vorbelegungen und **alle** abgeleiteten Masse |
-| `palette.typ` | die 18 Kapitel-Slots, die Ton-Ableitung, der Ink-Vertrag |
+| `palette.typ` | die 18 Kapitel-Slots, Ton-Ableitung, Ink-Vertrag, gedämpfte Tinte |
+| `knobs.typ` | Reglerwerte nachschlagen, unbekannte Regler abweisen |
 | `structure.typ` | Balken, Kapitelfarbe, `front`, `newcol`, Kopf und Fuss |
 | `blocks.typ` | die Box und ihre Vorbelegungen, Trenner, Listen, Ketten |
 | `tables.typ` | `tabular` |
@@ -177,6 +178,11 @@ Strip-Skript und keinen Verifier dafür.
 | `markup.typ` | Inline-Marker, Verweise, Formel-Marker, Grössenfarben |
 | `maths.typ` | die Operatoren, die Typst nicht mitbringt |
 | `index.typ` | Register: Eintrag, Sortierung, Ausgabe |
+
+**Farbe gehört nach `palette.typ`, ein Reglerwert in eine Tabelle.** Beides
+meldet der Linter bzw. `pick(name, wert, tabelle)` selbst: Nachschlagen **ist**
+die Prüfung, und eine if-Kette gäbe einem unbekannten Wert still die
+Vorbelegung.
 
 **Masse haben genau eine Rechenstelle.** Jede Länge wird in `config.typ` aus
 den Stellschrauben gerechnet. Ein hartes `pt`/`mm`-Mass in einem anderen Modul
@@ -232,12 +238,22 @@ prüft zusätzlich jede Schraube am gerenderten Satz auf Wirkung.
 | Name | Vorbelegung | Wirkung |
 |---|---|---|
 | `size` | `8pt` | Grundgrösse; nimmt den ganzen Satz mit, Verhältnisse bleiben |
+| `content-scale` | `1.0` | wie laut der Bausteininhalt neben den Balken steht |
 | `prose-scale` | `1.0` | wie laut die verbindende Prosa neben den Bausteinen steht |
 | `leading` | `1.0` | Zeilenhöhe |
 | `density` | `1.0` | alles Vertikale, das reiner Leerraum ist |
 | `density-blocks` | `1.0` | nur die Abstände der Bausteine |
 | `density-text` | `1.0` | nur der Absatzabstand im Fliesstext |
 | `density-tables` | `1.0` | nur Zell- und Zeilenabstand |
+| `density-structure` | `1.0` | nur Balkenpolsterung und der Abstand zu ihrem Inhalt |
+
+**Drei Grössen-Regler, drei Fragen.** `size` verschiebt alles gemeinsam; die
+beiden Rollen-Faktoren je **eine** Inhaltsart gegen die Balken, die stehen
+bleiben — `content-scale` alles **in** einem Baustein (Boxtext, Zelle, Formel,
+beide `font`-Stufen), `prose-scale` den Text, der zu **keinem** gehört.
+`content-scale` ist der Regler, wenn der Inhalt an eine **Breite** stösst: ob
+eine Formel in einer zweispaltigen Zelle einzeilig bleibt, entscheidet er
+allein — über `size` gelöst schrumpfen die Balken mit.
 
 **Reihenfolge beim Platzsparen:** `size` (grösster Hebel), dann `density`,
 zuletzt `leading` — danach das PDF auf kollidierende Formelzeilen prüfen. Die
@@ -269,6 +285,7 @@ entweder trennen oder Wortzwischenräume aufblähen muss.
 |---|---|---|
 | `palette` | 18 Slots | die Kapitelfarben (`30_struktur`) |
 | `quantities` | `(:)` | Grössenfarben des Fachs (`50_formeln`) |
+| `quantity-colors` | `true` | `false` nimmt sie für den S/W-Druck zurück, ohne die Vergabe anzutasten |
 | `index-pages` | `true` | Register zeigt zusätzlich die Druckseite |
 | `image-height` | `1.1cm` | Bildhöhe in einer Tabellenzeile |
 | `figure-height` | `2.6cm` | Bildhöhe als eigener Block |
@@ -347,6 +364,10 @@ Inhaltsfrage, nicht auf »welche Box nehme ich«.
 - **Blockwechsel:** `sep()` trennt zwei Blöcke **innerhalb** einer Box,
   `sep(label: [Fall B])` benennt den folgenden. Wer stattdessen eine zweite Box
   danebenstellt, hat den Trenner nicht gefunden.
+- **Der Ton gilt nach innen.** Was in einer Box steht, kennt ihren Ton: Der
+  Trenner einer Warn-Box ist rot, die Glieder einer `steps(tone: "warn")` sind
+  es auch. Es gibt dafür nichts zu setzen — `tone` an der Box genügt, und ein
+  Baustein darin braucht ihn nicht ein zweites Mal.
 - **Anmerkungen:** `note[…]` als dezente Zeile unter einer Formel.
 - **Text an eine Box binden:** `before[…]` gehört zur folgenden Box,
   `after[…]` zur vorhergehenden.
@@ -387,6 +408,16 @@ Inhaltsfrage, nicht auf »welche Box nehme ich«.
 
 Kapitel bringen dadurch Gliederung, PDF-Lesezeichen und die Registernummern
 von selbst mit.
+
+**Zeilenumbruch im Satz ist native Typst-Syntax**, kein Makro: `5~kg` bindet
+Zahl und Einheit, `Donau\-dampf\-schiff` gibt eine Trennstelle vor,
+`#sym.zws` erlaubt eine. Sparsam — häufen sie sich, ist der Text zu lang für
+die Spalte.
+
+Ein Front-Kapitel wird über **`anchor`** verweisbar: `#front("Zeichen &
+Einheiten", short: "Z&E", anchor: <ze>)`. Ein Label daneben hinge an der Marke
+**vor** der Überschrift, und `xref` läse dort die Nummer des vorhergehenden
+Kapitels ab — falsch, ohne Meldung. Register und Verweis zeigen das Kurzlabel.
 
 `short:` bei `front` ist der Kurz-Wegweiser, der im Register an der Stelle
 einer Abschnittsnummer erscheint — ein Front-Kapitel hat keine.

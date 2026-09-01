@@ -15,7 +15,7 @@
 // die Gliederung flacher, nicht tiefer.
 
 #import "config.typ": conf
-#import "palette.typ": tone-of
+#import "palette.typ": tone-of, ink-faint, ink-on-accent-soft
 
 // ── Kapitelfarbe ─────────────────────────────────────────────
 // Slot 0 gehört dem Front-Matter; nummerierte Kapitel rotieren über den Rest.
@@ -42,6 +42,22 @@
 
 /// Der Ton des laufenden Kapitels. Nur innerhalb von `context`.
 #let chapter-tone() = tone-of(current-accent())
+
+// ── Der aktive Ton ───────────────────────────────────────────
+// Ein Baustein, der in einer Box steht, muss deren Ton kennen: Der Trenner in
+// einer Warn-Box gehört in Warn-Rot, nicht in die Kapitelfarbe. Vorher las
+// jeder verschachtelte Baustein direkt `chapter-tone()` — und `steps(tone:
+// "warn")` behielt kapitelfarbene Glieder, obwohl die Box rot war.
+//
+// Ein Stapel statt eines einzelnen Werts, weil Boxen ineinander stehen. Die
+// Klammer setzt `panel`; alles dazwischen liest nur.
+#let tone-stack = state("zsf-tone", ())
+
+/// Der Ton, in dem gerade gesetzt wird — die umgebende Box oder das Kapitel.
+#let active-tone() = {
+  let s = tone-stack.get()
+  if s.len() > 0 { s.last() } else { chapter-tone() }
+}
 
 // ── Balken ───────────────────────────────────────────────────
 // Ein Balken klebt an seinem Inhalt (`sticky`). Damit entfällt die gesamte
@@ -75,14 +91,14 @@
   let c = conf()
   let accent = if it.numbering == none { c.palette.first() } else { current-accent() }
   block(
-    above: c.space.l,
-    below: c.space.s,
+    above: c.bar.above-chapter,
+    below: c.bar.below,
     _bar(
       fill: accent,
       color: white,
       radius: c.radius,
       size: c.font-size.chapter,
-      pad: (x: c.pad.x, y: c.pad.y-tight),
+      pad: (x: c.bar.pad-x, y: c.bar.pad-y),
       // Die Fläche setzt eine eigene Textfarbe und besitzt damit die Tinte
       // (siehe palette.typ → Ink-Vertrag). Ein Verweis im Titel bleibt lesbar.
       [#_num(it)#it.body],
@@ -94,14 +110,14 @@
   let c = conf()
   let t = chapter-tone()
   block(
-    above: c.space.m,
-    below: c.space.s,
+    above: c.bar.above-section,
+    below: c.bar.below,
     _bar(
       fill: t.bar,
       color: t.bar-text,
       radius: c.radius,
       size: c.font-size.section,
-      pad: (x: c.pad.x, y: c.pad.y-tight),
+      pad: (x: c.bar.pad-x, y: c.bar.pad-y),
       [#_num(it)#it.body],
     ),
   )
@@ -111,14 +127,14 @@
   let c = conf()
   let t = chapter-tone()
   block(
-    above: c.space.s,
-    below: c.space.xs,
+    above: c.bar.above-subsection,
+    below: c.bar.below-subsection,
     _bar(
       fill: t.bar-light,
       color: t.bar-light-text,
       radius: c.radius,
       size: c.font-size.subsection,
-      pad: (x: c.pad.x, y: c.pad.y-tight * 0.8),
+      pad: (x: c.bar.pad-x, y: c.bar.pad-y * 0.8),
       [#_num(it)#it.body],
     ),
   )
@@ -129,9 +145,37 @@
 /// Ein Front-Kapitel hat keine Abschnittsnummer, auf die ein Registereintrag
 /// zeigen könnte. `short` vergibt den Kurz-Wegweiser, der im Register an ihrer
 /// Stelle erscheint — ohne ihn nimmt das Register den vollen Titel.
-#let front(title, short: auto) = {
-  heading(numbering: none, level: 1, title)
+///
+/// `anchor` nimmt das Verweisziel entgegen: `#front("Zeichen", anchor: <ze>)`.
+/// Ein Label DANEBEN zu setzen genügt nicht — es hinge an der Marke vor der
+/// Überschrift, und `xref` läse dort die Nummer des vorigen Kapitels ab.
+#let front(title, short: auto, anchor: none) = {
+  // Die Marke steht VOR der Überschrift, damit ein Verweis, der auf die
+  // Überschrift selbst zeigt, sie noch findet.
   [#metadata(if short == auto { title } else { short })#label("zsf-front-label")]
+  let h = heading(numbering: none, level: 1, title)
+  if anchor == none { h } else { [#h#anchor] }
+}
+
+// ── Wohin ein Verweis zeigt ──────────────────────────────────
+/// Beschreibt das Ziel an `loc`: Abschnittsnummer und Kapitelfarbe — oder,
+/// wenn das Ziel in einem Front-Kapitel liegt, dessen Kurzlabel.
+///
+/// Die beiden Fälle stehen zusammen, weil sonst nur einer gepflegt wird: Das
+/// Register kannte das Front-Kapitel, `xref` nicht. Ein Verweis dorthin nannte
+/// still die Nummer des VORHERGEHENDEN Kapitels — falsch, ohne Meldung.
+#let ref-target(loc) = {
+  let c = conf()
+  let heads = query(selector(heading.where(level: 1)).before(loc))
+  if heads.len() > 0 and heads.last().numbering == none {
+    let labels = query(selector(<zsf-front-label>).before(loc))
+    return (
+      body: if labels.len() > 0 { labels.last().value } else { heads.last().body },
+      accent: c.palette.first(),
+    )
+  }
+  let nums = counter(heading).at(loc)
+  (body: nums.map(str).join("."), accent: accent-for(nums.first(), c.palette))
 }
 
 /// Bewusster Spaltenumbruch. Der einzige im System.
@@ -149,7 +193,7 @@
     width: 100%,
     fill: c.palette.first(),
     radius: c.radius,
-    inset: (x: c.pad.x, y: c.pad.y),
+    inset: (x: c.bar.pad-x, y: c.pad.y),
     {
       set align(center)
       set par(justify: false)
@@ -163,7 +207,7 @@
         block(above: c.space.xs, below: 0pt, text(
           size: c.font-size.note,
           style: "italic",
-          fill: white.darken(12%),
+          fill: ink-on-accent-soft,
         )[von #author])
       }
     },
@@ -175,7 +219,7 @@
 // Prüfungsstress nicht mit Inhalt verwechselt werden.
 #let page-footer(release) = context {
   let c = conf()
-  set text(size: c.font-size.footer, fill: luma(60%))
+  set text(size: c.font-size.footer, fill: ink-faint)
   grid(
     columns: (1fr, auto, 1fr),
     align: (left, center, right),

@@ -33,6 +33,9 @@ Zuordnung in Formeln.
   Bilder #secref(<ch:bilder>).
 
   #lbl[script-ref] verweist auf das Skript: #script-ref(42)
+
+  Ein Front-Kapitel hat keine Nummer; über `anchor` gesetzt, zeigen beide
+  Formen sein Kurzlabel: #xref(<ch:register>) und #secref(<ch:register>).
 ]
 
 #panel(tone: "neutral")[Der Ink-Vertrag][

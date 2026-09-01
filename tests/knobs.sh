@@ -82,11 +82,13 @@ check() { # beschreibung  argumente
 echo "knobs: Wirkung prüfen"
 check "size" 'size: 7pt'
 check "prose-scale" 'prose-scale: 0.8'
+check "content-scale" 'content-scale: 0.8'
 check "leading" 'leading: 1.3'
 check "density" 'density: 0.6'
 check "density-blocks" 'density-blocks: 0.5'
 check "density-text" 'density-text: 2.2'
 check "density-tables" 'density-tables: 0.4'
+check "density-structure" 'density-structure: 2.4'
 check "columns" 'columns: 3'
 check "margin" 'margin: 12mm'
 check "gutter" 'gutter: 9mm'
@@ -122,6 +124,26 @@ qprobe() {
 }
 if [ "$(qprobe 0)" = "$(qprobe 3)" ]; then
   echo "  quantities — KEINE WIRKUNG"
+  fail=1
+fi
+
+# `quantity-colors: false` muss dieselbe Grösse ungefärbt setzen.
+qbw() {
+  {
+    echo '#import "@local/zsf:0.1.0": *'
+    echo "#show: zsf.with(title: \"P\", quantities: (\"Kraft\": 3), quantity-colors: $1)"
+    echo '= K'
+    echo '$#quantity("Kraft", $F$) = m dot a$'
+  } >tests/out/qbw.typ
+  rm -f tests/out/qbw*.png
+  typst compile tests/out/qbw.typ "tests/out/qbw{p}.png" --ppi 60 --root . >/dev/null 2>&1 || {
+    echo BUILD-FEHLER
+    return
+  }
+  cat tests/out/qbw*.png | shasum | cut -d' ' -f1
+}
+if [ "$(qbw true)" = "$(qbw false)" ]; then
+  echo "  quantity-colors — KEINE WIRKUNG"
   fail=1
 fi
 

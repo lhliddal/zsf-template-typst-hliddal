@@ -7,7 +7,7 @@
 // Vorgänger brauchte dafür einen 1064-zeiligen Verifier, weil LaTeX beides
 // stillschweigend annahm.
 
-#import "../src/palette.typ": seeds, tone-of, light-of, neutral-tone, warn-tone
+#import "../src/palette.typ": seeds, tone-of, light-of, neutral-tone, warn-tone, ink-muted, ink-faint, ink-ghost
 #import "../src/structure.typ": accent-for
 #import "../src/index.typ": sort-key
 #import "../src/config.typ": defaults, derive
@@ -175,6 +175,39 @@
 #assert(boxy.pad.x < base.pad.x)
 #assert.eq(boxy.cell.y, base.cell.y)
 #assert.eq(boxy.par-space, base.par-space)
+
+// Ein Bereichsfaktor trifft seinen Bereich und sonst nichts — auch der neue:
+// Vorher hingen die Balken am Block-Register, und »Boxen enger« rückte
+// stillschweigend auch die Überschriften an ihren Text.
+#let structy = derive(defaults + (density-structure: 0.5))
+#assert(structy.bar.pad-y < base.bar.pad-y)
+#assert(structy.bar.above-section < base.bar.above-section)
+#assert.eq(structy.pad.x, base.pad.x)
+#assert.eq(structy.cell.y, base.cell.y)
+#assert.eq(boxy.bar.pad-y, base.bar.pad-y)
+
+// Die zwei Rollen-Faktoren sind Gegenstücke und dürfen einander nicht
+// mitziehen — und keiner von beiden die Balken.
+#let inhalt = derive(defaults + (content-scale: 0.8))
+#let prosa = derive(defaults + (prose-scale: 0.8))
+#assert(inhalt.font-size.body < base.font-size.body)
+#assert(inhalt.font-size.dense < base.font-size.dense)
+#assert.eq(inhalt.font-size.prose, base.font-size.prose)
+#assert(prosa.font-size.prose < base.font-size.prose)
+#assert.eq(prosa.font-size.body, base.font-size.body)
+#for f in (inhalt, prosa) {
+  assert.eq(f.font-size.chapter, base.font-size.chapter)
+  assert.eq(f.font-size.section, base.font-size.section)
+  assert.eq(f.font-size.title, base.font-size.title)
+}
+
+// Gedämpfte Tinte: drei Stufen, unterscheidbar und in dieser Reihenfolge.
+// Vorher waren es sieben Grauwerte über fünf Dateien — 40 und 45 % lagen so
+// nah beieinander, dass der Unterschied keine Bedeutung mehr trug.
+#assert(L(ink-muted) < L(ink-faint))
+#assert(L(ink-faint) < L(ink-ghost))
+#assert(L(ink-faint) - L(ink-muted) > 10)
+#assert(L(ink-ghost) - L(ink-faint) > 10)
 
 // Bildhöhen sind Inhalt und folgen der Dichte nicht.
 #assert.eq(dense.image-height, base.image-height)

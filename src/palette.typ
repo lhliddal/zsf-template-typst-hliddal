@@ -44,7 +44,16 @@
 #let title-ink = rgb("#0A0A1E") // Schrift auf einer hellen Titelfläche
 #let link-color = rgb("#215CAF")
 #let danger-color = rgb("#CC0000") // ETH-Rot
-#let note-fill = luma(35%)
+
+// Gedämpfte Tinte — DREI Stufen, benannt nach ihrer Rolle. Vorher waren es
+// sieben Grauwerte, über fünf Dateien verstreut und alle direkt hingeschrieben:
+// 30, 35, 40, 45, 50, 55, 60 %. Der Unterschied zwischen 40 und 45 % ist keine
+// Bedeutung, sondern nur ein anderer Grauton — und solange jede Fundstelle
+// ihren eigenen mitbrachte, konnte niemand sie gemeinsam heller stellen.
+#let ink-muted = luma(35%) // Anmerkung, Bildunterschrift, Zwischenschritt
+#let ink-faint = luma(52%) // Seitenmöbel, Register-Locator, Skript-Verweis
+#let ink-ghost = luma(75%) // Punktführung im Register — sichtbar, nie gelesen
+#let ink-on-accent-soft = white.darken(12%) // zweite Zeile auf gefärbter Fläche
 
 // ── Ton-Ableitung ────────────────────────────────────────────
 // Die Aufhellung: gleiche Helligkeit für jeden Akzent, damit Slot 8 (sehr
