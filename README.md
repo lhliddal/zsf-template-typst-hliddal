@@ -38,6 +38,11 @@ Die Schriften liegen im Repository und werden dem Compiler vom Makefile
 im Editor sehen will (Vorschau in VS Code, tinymist): `make fonts` kopiert sie
 einmalig nach `~/Library/Fonts`.
 
+Genau deshalb ist dies ein **lokales** Package (`@local/zsf`) und keines für
+Typst Universe: Ein veröffentlichtes Package darf keine Schriften mitliefern,
+und ohne Carlito und NewCM Sans Math stimmt das Satzbild nicht. Ein Fork ist
+folglich nicht eigenständig — er braucht dieses Repository am Platz.
+
 ## Ein Kapitel sieht so aus
 
 ```typ
@@ -72,7 +77,7 @@ und landen damit automatisch im Register.
 **Regler** — benannte Argumente, auf jeder Box: `tone`, `weight`, `pad`,
 `frame`, `surface`, `align`, `font`, `tag`, `breakable`.
 
-**Marker** — `kw`, `lbl`, `danger`, `concl`, `hl`, `xref`, `secref`,
+**Marker** — `kw`, `lbl`, `danger`, `concl`, `hl`, `xref`, `sec-ref`,
 `markA`–`markD`, `quantity`.
 
 **Stellschrauben** — 24 benannte Argumente von `zsf(...)`, von `size` und
@@ -94,6 +99,7 @@ make check       # alles, in ~3 Sekunden
 | `lint` | Steht Gestaltung im Kapitel oder ein hartes Mass ausserhalb von `config.typ`? |
 | `knobs` | Hat **jede** Stellschraube eine messbare Wirkung? |
 | `coverage` | Wird jeder öffentliche Name vorgeführt und beschrieben? |
+| `warnings` | Bauen Referenz, Katalog und Fork-Vorlage ohne eine einzige Compiler-Meldung? |
 | `identity` | Trägt das PDF Titel, Autor und Kennungen? |
 
 Nicht geprüft wird, was Typst selbst fängt — unbekannte Argumente, falsche
@@ -104,8 +110,8 @@ neben dem Compiler.
 
 ```
 lib.typ        die öffentliche API — das Einzige, was ein Kapitel importiert
-src/           das System: config, palette, structure, blocks, tables,
-               media, markup, maths, index
+src/           das System: config, knobs, palette, readability, structure,
+               blocks, tables, media, markup, maths, index
 template/      was ein Fork bekommt
 showcase/      die Referenz-Implementierung
 catalog/       der Baustein-Katalog

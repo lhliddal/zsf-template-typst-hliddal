@@ -75,7 +75,12 @@
 }
 
 /// Kompakte, klickbare Zielnummer ohne Pfeil — für lokale Inhaltsübersichten.
-#let secref(target) = context {
+///
+/// Kebab-Schreibweise wie `script-ref`: Typst empfiehlt sie für mehrteilige
+/// Namen, und eine API, in der die eine Verweisform getrennt und die andere
+/// zusammengeschrieben wird, muss man sich merken statt sie zu erraten.
+/// `xref` bleibt als feststehender Begriff einteilig.
+#let sec-ref(target) = context {
   let d = _target(target)
   link(target, ink(d.accent, d.body))
 }

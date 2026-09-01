@@ -25,7 +25,7 @@ Namen; ein wirkungsloser Regler ist damit ausgeschlossen.
 
 #after[
   Die beiden Rollen-Faktoren sind Gegenstücke: `content-scale` trifft alles
-  **in** einem Baustein, `prose-scale` den Text, der zu **keinem** gehört.
+  *in* einem Baustein, `prose-scale` den Text, der zu *keinem* gehört.
   Balken und Titel bleiben bei beiden stehen. `content-scale` ist der Regler,
   wenn der Inhalt an eine #hl[Breite] stösst — ob eine Formel in einer
   zweispaltigen Zelle einzeilig bleibt, entscheidet er allein.

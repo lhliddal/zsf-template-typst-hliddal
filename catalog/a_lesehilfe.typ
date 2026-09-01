@@ -20,13 +20,13 @@ diese Zeile nennt den Zweck.]
 #tabular(
   title: [A-02 · Wo was steht], cols: (0.34, 1.0, 1.6),
   [ID], [Kap.], [Inhalt],
-  [B], secref(<kat:struktur>), [Kapitel, Balken, Umbruch],
-  [C], secref(<kat:boxen>), [die Bausteine],
-  [D], secref(<kat:regler>), [jeder Regler, jeder Wert],
-  [E], secref(<kat:tabellen>), [tabular],
-  [F], secref(<kat:marker>), [Inline-Semantik, Verweise],
-  [G], secref(<kat:formeln>), [Bilder und Formelsatz],
-  [H], secref(<kat:inventar>), [Liste: Name, Modul, Art],
+  [B], sec-ref(<kat:struktur>), [Kapitel, Balken, Umbruch],
+  [C], sec-ref(<kat:boxen>), [die Bausteine],
+  [D], sec-ref(<kat:regler>), [jeder Regler, jeder Wert],
+  [E], sec-ref(<kat:tabellen>), [tabular],
+  [F], sec-ref(<kat:marker>), [Inline-Semantik, Verweise],
+  [G], sec-ref(<kat:formeln>), [Bilder und Formelsatz],
+  [H], sec-ref(<kat:inventar>), [Liste: Name, Modul, Art],
 )
 #zweck("A-02", none)[B bis G zeigen, wie ein Baustein aussieht. H sagt, was er ist und in
 welcher Datei er lebt — die beiden Fragen nach der Entscheidung.]

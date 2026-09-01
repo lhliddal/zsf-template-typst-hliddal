@@ -23,7 +23,7 @@ RELEASE_ID ?= DEV-$(BUILD_DATE)
 BUILD_ID   := $(shell date -u +%Y%m%dT%H%M%SZ)-$(shell git rev-parse --short HEAD 2>/dev/null || echo nogit)
 TYPST_ARGS := --root $(ROOT) --input release=$(RELEASE_ID) --input build=$(BUILD_ID)
 
-.PHONY: all build watch catalog catalog-status fonts check test errors lint knobs coverage identity install fork thumbnail fmt sync-rules check-rules clean help
+.PHONY: all build watch catalog catalog-status fonts check test errors lint knobs coverage identity warnings install fork fmt sync-rules check-rules clean help
 
 all: build
 
@@ -66,7 +66,7 @@ fonts:
 	@cp fonts/* "$(HOME)/Library/Fonts/" && echo "Carlito und NewCM Sans Math installiert"
 
 ## check — der ganze Harness
-check: build test errors lint knobs coverage identity check-rules
+check: build test errors lint knobs coverage warnings identity check-rules
 	@$(MAKE) -s catalog-status
 	@echo "check: alles grün"
 
@@ -90,6 +90,10 @@ knobs: install
 coverage:
 	@bash tests/coverage.sh
 
+## warnings — kein Dokument darf eine Compiler-Meldung erzeugen
+warnings: install
+	@bash tests/warnings.sh
+
 ## identity — PDF-Metadaten nach dem Build
 identity: build
 	@bash tests/identity.sh $(SHOWCASE) "$(RELEASE_ID)"
@@ -102,17 +106,13 @@ sync-rules:
 check-rules:
 	@python3 tools/sync_rules.py --check
 
-## thumbnail — Vorschaubild für typst init
-thumbnail: install
-	@typst compile showcase/main.typ thumbnail.png --pages 1 --ppi 60 $(TYPST_ARGS)
-
 ## fmt — Quellen formatieren (typstyle, falls installiert)
 fmt:
 	@command -v typstyle >/dev/null && typstyle -i lib.typ src/*.typ showcase/*.typ template/**/*.typ tests/*.typ || echo "typstyle nicht installiert — übersprungen"
 
 ## clean — erzeugte Dateien entfernen
 clean:
-	@rm -f $(SHOWCASE) $(CATALOG) thumbnail.png tests/out-unit.pdf
+	@rm -f $(SHOWCASE) $(CATALOG) tests/out-unit.pdf
 	@rmdir tests/out 2>/dev/null || true
 
 help:

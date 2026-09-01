@@ -68,7 +68,7 @@ Zuordnung in Formeln.
 ## Verweise
 
 `xref(<label>)` springt mit Pfeil und in der Farbe des Zielkapitels — einsetzen,
-wenn der Sprung in der Prüfung Suchzeit spart. `secref(<label>)` ist die
+wenn der Sprung in der Prüfung Suchzeit spart. `sec-ref(<label>)` ist die
 kompakte Zielnummer für lokale Übersichten. `script-ref(42)` verweist auf die
 Skript-Seite. Ein Verweis ins Leere bricht den Build.
 

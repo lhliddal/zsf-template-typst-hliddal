@@ -16,7 +16,7 @@
 #import "src/blocks.typ": panel, warn, formula, picture, code, steps, facts, item, split, sep, note, before, after, given, step, target, case
 #import "src/tables.typ": tabular
 #import "src/media.typ": fig, fig-side, caption
-#import "src/markup.typ": kw, lbl, danger, concl, hl, diagram-label, xref, secref, markA, markB, markC, markD, quantity, script-ref
+#import "src/markup.typ": kw, lbl, danger, concl, hl, diagram-label, xref, sec-ref, markA, markB, markC, markD, quantity, script-ref
 #import "src/maths.typ": *
 #import "src/index.typ": idx, idx-see, make-index
 

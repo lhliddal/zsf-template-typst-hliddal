@@ -1,6 +1,6 @@
 # ZSF Template (Typst) — AGENTS.md
 
-> ERZEUGT — rules-hash:20c0f9f02b410f82
+> ERZEUGT — rules-hash:87ae6994b60e510c
 >
 > Quelle: `rules/*.md`. Nicht direkt bearbeiten.
 > Ändern: `rules/*.md` editieren → `make sync-rules`. Drift: `make check-rules`.
@@ -462,7 +462,7 @@ Zuordnung in Formeln.
 ## Verweise
 
 `xref(<label>)` springt mit Pfeil und in der Farbe des Zielkapitels — einsetzen,
-wenn der Sprung in der Prüfung Suchzeit spart. `secref(<label>)` ist die
+wenn der Sprung in der Prüfung Suchzeit spart. `sec-ref(<label>)` ist die
 kompakte Zielnummer für lokale Übersichten. `script-ref(42)` verweist auf die
 Skript-Seite. Ein Verweis ins Leere bricht den Build.
 

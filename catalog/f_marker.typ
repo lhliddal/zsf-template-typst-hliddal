@@ -42,10 +42,10 @@ Auszeichnung ist.
 ]
 #zweck("F-07", "xref")[Sprung mit Pfeil, in der Farbe des Zielkapitels.]
 
-#eintrag[F-08][secref][
-  Mustertext mit der Zielnummer #secref(<kat:boxen>) zum Formvergleich.
+#eintrag[F-08][sec-ref][
+  Mustertext mit der Zielnummer #sec-ref(<kat:boxen>) zum Formvergleich.
 ]
-#zweck("F-08", "secref")[Kompakte Nummer für lokale Übersichten.]
+#zweck("F-08", "sec-ref")[Kompakte Nummer für lokale Übersichten.]
 
 #eintrag[F-09][script-ref][
   Mustertext mit einem Skriptverweis #script-ref(42) zum Formvergleich.

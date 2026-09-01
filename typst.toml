@@ -5,7 +5,21 @@ entrypoint = "lib.typ"
 authors = ["Loris Einar Kristjan Hliddal <lhliddal@student.ethz.ch>"]
 license = "MIT"
 description = "Vierspaltige Pruefungs-Zusammenfassung: Bausteinkatalog mit Reglern statt Layout-Handarbeit."
+keywords = ["zusammenfassung", "cheatsheet", "pruefung", "mehrspaltig"]
+categories = ["report"]
 compiler = "0.15.0"
+
+# Was nicht in ein Bundle gehoert: die zwei Vorfuehrdokumente, der Harness und
+# das Regelwerk. Sie gehoeren zur Entwicklung des Templates, nicht zu seiner
+# Benutzung.
+exclude = ["showcase", "catalog", "tests", "rules", "tools", "*.pdf", "AGENTS.md", "CLAUDE.md", "Makefile"]
+
+# Dieses Package ist bewusst LOKAL (@local/zsf) und nicht fuer Typst Universe
+# gedacht: Ein veroeffentlichtes Package darf keine Schriften mitliefern, und
+# ohne Carlito und NewCM Sans Math stimmt das Satzbild nicht. Deshalb liegen
+# sie hier in fonts/ und das Makefile reicht sie ueber TYPST_FONT_PATHS an den
+# Compiler weiter. Wer doch veroeffentlichen will, braucht zusaetzlich
+# `thumbnail` und muesste die Schriften zum Selbstinstallieren dokumentieren.
 
 [template]
 path = "template"

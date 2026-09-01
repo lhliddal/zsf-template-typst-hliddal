@@ -28,14 +28,14 @@ Zuordnung in Formeln.
   #lbl[xref] springt mit Pfeil und trägt die Farbe des Zielkapitels:
   #xref(<ch:tabellen>) und #xref(<sec:markieren>).
 
-  #lbl[secref] ist die kompakte Zielnummer für lokale Übersichten:
-  Tabellen #secref(<ch:tabellen>), Formeln #secref(<ch:formeln>),
-  Bilder #secref(<ch:bilder>).
+  #lbl[sec-ref] ist die kompakte Zielnummer für lokale Übersichten:
+  Tabellen #sec-ref(<ch:tabellen>), Formeln #sec-ref(<ch:formeln>),
+  Bilder #sec-ref(<ch:bilder>).
 
   #lbl[script-ref] verweist auf das Skript: #script-ref(42)
 
   Ein Front-Kapitel hat keine Nummer; über `anchor` gesetzt, zeigen beide
-  Formen sein Kurzlabel: #xref(<ch:register>) und #secref(<ch:register>).
+  Formen sein Kurzlabel: #xref(<ch:register>) und #sec-ref(<ch:register>).
 ]
 
 #panel(tone: "neutral")[Der Ink-Vertrag][
