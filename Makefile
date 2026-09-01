@@ -18,7 +18,7 @@ RELEASE_ID ?= DEV-$(BUILD_DATE)
 BUILD_ID   := $(shell date -u +%Y%m%dT%H%M%SZ)-$(shell git rev-parse --short HEAD 2>/dev/null || echo nogit)
 TYPST_ARGS := --root $(ROOT) --input release=$(RELEASE_ID) --input build=$(BUILD_ID)
 
-.PHONY: all build watch check test errors lint knobs coverage identity install fork thumbnail fmt sync-rules check-rules clean help
+.PHONY: all build watch fonts check test errors lint knobs coverage identity install fork thumbnail fmt sync-rules check-rules clean help
 
 all: build
 
@@ -42,6 +42,11 @@ fork: install
 	@typst init @local/$(PKG_NAME):$(PKG_VER) ../$(NAME)
 	@cp template/Makefile ../$(NAME)/Makefile
 	@echo "Fork in ../$(NAME) — dort: make build"
+
+## fonts — Schriften ins System kopieren, damit der Editor sie kennt
+fonts:
+	@mkdir -p "$(HOME)/Library/Fonts"
+	@cp fonts/* "$(HOME)/Library/Fonts/" && echo "Carlito und NewCM Sans Math installiert"
 
 ## check — der ganze Harness
 check: build test errors lint knobs coverage identity check-rules

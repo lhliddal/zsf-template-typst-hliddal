@@ -24,7 +24,12 @@ make watch                         # schreiben, PDF aktualisiert sich
 ```
 
 Voraussetzungen: `typst` (0.15+), `make`, `python3`, optional `pdfinfo` für die
-Identitätsprüfung. Die Schriften liegen im Repository — nichts zu installieren.
+Identitätsprüfung.
+
+Die Schriften liegen im Repository und werden dem Compiler vom Makefile
+übergeben — deshalb immer über `make`, nicht über `typst` direkt. Wer sie auch
+im Editor sehen will (Vorschau in VS Code, tinymist): `make fonts` kopiert sie
+einmalig nach `~/Library/Fonts`.
 
 ## Ein Kapitel sieht so aus
 
@@ -53,8 +58,8 @@ und landen damit automatisch im Register.
 
 ## Was es gibt
 
-**Bausteine** — `panel` und sieben Vorbelegungen davon: `warn`, `formula`,
-`picture`, `steps`, `facts`, `code`, `tabular`. Dazu `fig`, `fig-side`,
+**Bausteine** — `panel` und fünf Vorbelegungen davon: `warn`, `formula`,
+`picture`, `steps`, `code`. Dazu `tabular`, `facts`, `fig`, `fig-side`,
 `split`, `sep`, `note`, `before`, `after`.
 
 **Regler** — benannte Argumente, auf jeder Box: `tone`, `weight`, `pad`,
@@ -104,9 +109,9 @@ tests/         der Harness
 
 | | LaTeX | Typst |
 |---|---|---|
-| Gestaltungssystem | 5560 Zeilen | 1275 Zeilen |
-| Harness | 4102 Zeilen | 666 Zeilen |
-| Regelwerk | 95 KB | 28 KB |
+| Gestaltungssystem | 5560 Zeilen | 1355 Zeilen |
+| Harness | 4102 Zeilen | 731 Zeilen |
+| Regelwerk | 95 KB | 29 KB |
 | Vollbuild | 7,2 s | 0,13 s |
 | `make check` | 8 s + Tiefenprüfungen | 3,1 s |
 | Fork anlegen | eigenes Skript plus Verifier | `typst init` |
@@ -118,9 +123,16 @@ Reglerpaar in beiden Reihenfolgen setzt. In Typst sind benannte Argumente
 reihenfolgefrei, `block(sticky: true)` bindet den Balken, und ein unbekanntes
 Argument bricht den Build.
 
-Erhalten geblieben sind die Prinzipien: vier Spalten, die 18-Slot-Palette mit
-Slot 0 für Front-Matter, ein kleiner Katalog mit vielen Reglern, Gestaltung
-nur in `src/`, und das Register mit farbcodiertem Abschnitts-Locator.
+Erhalten geblieben ist das Satzbild: vier Spalten, dieselbe 18-Slot-Palette mit
+Slot 0 für Front-Matter, heller Box-Titel mit dunkler Schrift auf fast weissem
+Rumpf, gesättigte Kapitel- und Abschnittsbalken, Register mit farbcodiertem
+Abschnitts-Locator.
+
+Das Farbmodell ist dabei nicht übersetzt, sondern **abgeleitet**: Die 18
+handgewählten Aufhellungen des Vorgängers liegen alle bei L ≈ 88.5 % mit einem
+Fünftel der Buntheit ihres Akzents. Aus dieser gemessenen Regel entsteht hier
+jede Fläche — mit dem Nebeneffekt, dass jeder Slot exakt denselben Kontrast
+trägt, wo der Vorgänger je nach Farbe zwischen 33 und 41 Punkten schwankte.
 
 ## Lizenz
 

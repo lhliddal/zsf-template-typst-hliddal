@@ -2,8 +2,12 @@
 // <FACH> — Zusammenfassung
 // =============================================================
 //
-//   typst watch main.typ            während der Arbeit
+//   make watch                      während der Arbeit
 //   make build                      fertiges PDF
+//
+// Immer über `make`, nicht über `typst` direkt: Die Schriften liegen im
+// Package und werden dem Compiler vom Makefile übergeben. `make fonts`
+// installiert sie zusätzlich ins System, damit auch der Editor sie kennt.
 //
 // Alle globalen Entscheidungen stehen unten in `zsf(...)`. Was dort nicht
 // steht, wird nicht pro ZSF entschieden, sondern pro Stelle über einen Regler

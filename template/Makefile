@@ -13,7 +13,7 @@ RELEASE_ID ?= DEV-$(BUILD_DATE)
 BUILD_ID   := $(shell date -u +%Y%m%dT%H%M%SZ)-$(shell git rev-parse --short HEAD 2>/dev/null || echo nogit)
 TYPST_ARGS := --input release=$(RELEASE_ID) --input build=$(BUILD_ID)
 
-.PHONY: all build watch pages clean
+.PHONY: all build watch pages fonts clean
 
 all: build
 
@@ -25,6 +25,11 @@ build:
 ## watch — live nachbauen, während geschrieben wird
 watch:
 	@typst watch main.typ $(PDF_BASENAME).pdf $(TYPST_ARGS)
+
+## fonts — Schriften ins System kopieren, damit der Editor sie kennt
+fonts:
+	@mkdir -p "$(HOME)/Library/Fonts"
+	@cp "$(PKG_DIR)"/fonts/* "$(HOME)/Library/Fonts/" && echo "Carlito und NewCM Sans Math installiert"
 
 ## pages — Seitenzahl des aktuellen Standes
 pages: build
