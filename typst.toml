@@ -1,0 +1,12 @@
+[package]
+name = "zsf"
+version = "0.1.0"
+entrypoint = "lib.typ"
+authors = ["Loris Einar Kristjan Hliddal <lhliddal@student.ethz.ch>"]
+license = "MIT"
+description = "Vierspaltige Pruefungs-Zusammenfassung: Bausteinkatalog mit Reglern statt Layout-Handarbeit."
+compiler = "0.15.0"
+
+[template]
+path = "template"
+entrypoint = "main.typ"

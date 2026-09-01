@@ -1,0 +1,183 @@
+// =============================================================
+// tests/unit.typ — Zusicherungen über die reinen Funktionen
+// =============================================================
+//
+// Kompiliert = bestanden. Was Typst schon selbst prüft (unbekannte Argumente,
+// falsche Typen, fehlende Verweisziele), steht hier bewusst NICHT: Der
+// Vorgänger brauchte dafür einen 1064-zeiligen Verifier, weil LaTeX beides
+// stillschweigend annahm.
+
+#import "../src/palette.typ": seeds, tone-of, light-of, neutral-tone, warn-tone
+#import "../src/structure.typ": accent-for
+#import "../src/index.typ": sort-key
+#import "../src/config.typ": defaults, derive
+
+// ── Sortierung nach DIN 5007-1 ───────────────────────────────
+#assert.eq(sort-key("Übung"), "ubung")
+#assert.eq(sort-key("Öffnung"), "offnung")
+#assert.eq(sort-key("Ähnlichkeit"), "ahnlichkeit")
+#assert.eq(sort-key("Straße"), "strasse")
+#assert.eq(sort-key("Céline"), "celine")
+// Zeichen ausserhalb von Buchstaben und Ziffern fallen weg, damit
+// »C¹-Funktion« bei C einsortiert und nicht bei einem Sonderzeichen.
+#assert.eq(sort-key("C¹-Funktion"), "cfunktion")
+#assert.eq(sort-key("L²-Norm"), "lnorm")
+// Umlaute sortieren zwischen ihren Nachbarn, nicht ans Ende.
+#assert(sort-key("Ähnlich") < sort-key("Algebra"))
+#assert(sort-key("Zähler") > sort-key("Wurzel"))
+
+// ── Kapitelfarben ────────────────────────────────────────────
+// Slot 0 gehört dem Front-Matter und wird von keinem Kapitel belegt.
+#assert.eq(accent-for(0, seeds), seeds.at(0))
+#assert.eq(accent-for(1, seeds), seeds.at(1))
+#assert.eq(accent-for(17, seeds), seeds.at(17))
+// Nach dem letzten Slot rotiert es — aber nie zurück auf Slot 0.
+#assert.eq(accent-for(18, seeds), seeds.at(1))
+#for n in range(1, 60) {
+  assert(accent-for(n, seeds) != seeds.at(0), message: "Slot 0 ist reserviert")
+}
+// Benachbarte Kapitel müssen unterscheidbar bleiben (Abstand 1 und 2).
+#for n in range(1, 40) {
+  assert(accent-for(n, seeds) != accent-for(n + 1, seeds))
+  assert(accent-for(n, seeds) != accent-for(n + 2, seeds))
+}
+
+// ── Ton-Ableitung ────────────────────────────────────────────
+// Jede Rolle ist in jedem Ton besetzt. Im Vorgänger war das eine Zusage über
+// 21 handgepflegte Farbtokens pro Ton; hier folgt es aus der Ableitung.
+#let roles = (
+  "accent",
+  "light",
+  "title-back",
+  "title-text",
+  "quiet",
+  "loud",
+  "emphasis",
+  "zebra",
+  "frame-soft",
+  "rule",
+  "frame-strong",
+  "frame-hard",
+  "bar",
+  "bar-text",
+  "bar-light",
+  "bar-light-text",
+  "head-back",
+  "head-text",
+)
+
+#let L = c => oklch(c).components().at(0) / 1%
+// Kontrast als Helligkeitsabstand in OKLCH. Kein WCAG-Ersatz, aber es fängt
+// genau den Fehler, der hier auftreten kann: Schrift auf einer Fläche, die
+// ihr zu nahe liegt.
+#let contrast(fg, bg) = calc.abs(L(fg) - L(bg))
+
+#for accent in seeds + (neutral-tone.accent,) {
+  for t in (tone-of(accent), tone-of(accent, emphatic: true)) {
+    for r in roles {
+      assert(r in t, message: "Rolle " + r + " fehlt im Ton " + repr(accent))
+    }
+
+    // Jede Schrift muss auf ihrer Fläche tragen.
+    assert(
+      contrast(t.title-text, t.title-back) > 40,
+      message: "Box-Titel zu kontrastarm: " + repr(accent),
+    )
+    // Der Abschnittsbalken ist bewusst die leisere Stufe; sein Kontrast liegt
+    // darum unter dem des Kapitelbalkens, aber für jeden Slot gleich hoch.
+    assert(
+      contrast(t.bar-text, t.bar) > 34,
+      message: "Abschnittsbalken zu kontrastarm: " + repr(accent),
+    )
+    assert(
+      contrast(t.bar-light-text, t.bar-light) > 40,
+      message: "Unterabschnitt zu kontrastarm: " + repr(accent),
+    )
+    assert(
+      contrast(t.head-text, t.head-back) > 42,
+      message: "Tabellenkopf zu kontrastarm: " + repr(accent),
+    )
+    assert(
+      contrast(white, t.accent) > 42,
+      message: "Kapitelbalken zu kontrastarm: " + repr(accent),
+    )
+
+    // Jede Inhaltsfläche muss schwarzen Fliesstext tragen.
+    for surface in (t.quiet, t.loud, t.emphasis, t.zebra) {
+      assert(L(surface) > 87, message: "Fläche zu dunkel für Fliesstext: " + repr(accent))
+    }
+
+    // Die Flächen sind gestuft: die laute Fläche ist die blasseste, das Zebra
+    // die kräftigste — sonst verschwindet der Streifen in der Zeile.
+    assert(L(t.loud) > L(t.emphasis), message: "loud muss blasser sein als emphasis")
+    assert(L(t.emphasis) > L(t.zebra), message: "emphasis muss blasser sein als zebra")
+
+    // Der Rahmen wird von leicht nach hart dunkler. Im emphatischen Ton fallen
+    // strong und hard bewusst zusammen — dort ist der Akzent selbst die Kante.
+    assert(L(t.frame-soft) > L(t.frame-strong), message: "soft muss heller sein als strong")
+    assert(L(t.frame-strong) >= L(t.frame-hard), message: "strong darf nicht dunkler sein als hard")
+  }
+}
+
+// Und alle Abschnittsbalken tragen denselben Kontrast, egal welcher Slot.
+#for accent in seeds {
+  assert(calc.abs(L(tone-of(accent).bar) - 62) < 0.6)
+}
+// Dasselbe für jede getönte Fläche: gleiche Helligkeit über alle Slots.
+#for (role, want) in (loud: 98.5, emphasis: 95.5, zebra: 92.0, bar-light: 92.0) {
+  for accent in seeds {
+    assert(
+      calc.abs(L(tone-of(accent).at(role)) - want) < 0.6,
+      message: "Fläche »" + role + "« weicht ab bei " + repr(accent),
+    )
+  }
+}
+
+// Die Aufhellung hält für JEDEN Akzent dieselbe Helligkeit — das ist der Grund,
+// warum ein dunkler und ein heller Slot gleich stark getönte Flächen ergeben.
+#for accent in seeds {
+  assert(calc.abs(L(light-of(accent)) - 88.5) < 0.6)
+}
+
+// ── Abgeleitete Masse ────────────────────────────────────────
+#let base = derive(defaults)
+// Die Skala ist geordnet, nicht bloss vorhanden.
+#assert(base.space.xs < base.space.s)
+#assert(base.space.s < base.space.m)
+#assert(base.space.m < base.space.l)
+#assert(base.pad.y-tight < base.pad.y)
+#assert(base.pad.x-tight < base.pad.x)
+#assert(base.cell.y-tight < base.cell.y)
+#assert(base.cell.y < base.cell.y-roomy)
+#assert(base.font-size.dense < base.font-size.body)
+#assert(base.font-size.body < base.font-size.chapter)
+#assert(base.font-size.note < base.font-size.body)
+
+// Die Dichte greift auf alles Vertikale — und nur darauf.
+#let dense = derive(defaults + (density: 0.5))
+#assert(dense.space.m < base.space.m, message: "density muss die Abstände treffen")
+#assert(dense.pad.y < base.pad.y)
+#assert(dense.cell.y < base.cell.y)
+#assert.eq(dense.font-size.body, base.font-size.body)
+#assert.eq(dense.gutter, base.gutter)
+
+// Die Grundgrösse nimmt Schrift UND Masse mit, die Verhältnisse bleiben.
+#let big = derive(defaults + (size: 12pt))
+#assert(big.font-size.body > base.font-size.body)
+#assert(big.space.m > base.space.m)
+#assert.eq(
+  big.font-size.chapter / big.font-size.body,
+  base.font-size.chapter / base.font-size.body,
+)
+
+// Ein Bereichsfaktor trifft seinen Bereich und sonst nichts.
+#let boxy = derive(defaults + (density-blocks: 0.5))
+#assert(boxy.pad.x < base.pad.x)
+#assert.eq(boxy.cell.y, base.cell.y)
+#assert.eq(boxy.par-space, base.par-space)
+
+// Bildhöhen sind Inhalt und folgen der Dichte nicht.
+#assert.eq(dense.image-height, base.image-height)
+#assert(base.image-height < base.figure-height)
+
+Alle Zusicherungen erfüllt.

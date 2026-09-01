@@ -1,0 +1,9 @@
+# Erzeugtes
+katalog.pdf
+thumbnail.png
+tests/out/
+tests/out-unit.pdf
+*.pdf.gz
+
+# System
+.DS_Store

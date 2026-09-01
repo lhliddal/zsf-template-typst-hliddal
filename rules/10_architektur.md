@@ -1,0 +1,57 @@
+---
+name: 10_architektur
+scope: project
+purpose: Verzeichnisse, Package/Fork-Trennung, wo was hingehört
+---
+
+Das Template ist ein **Typst-Package**. Es hat zwei Rollen, und die sind
+strukturell getrennt statt durch Marker im selben Text:
+
+| Verzeichnis | Rolle |
+|---|---|
+| `lib.typ`, `src/` | das System — die einzige Stelle mit Gestaltung |
+| `template/` | was ein Fach-Fork bekommt (`typst init` kopiert nur das) |
+| `showcase/` | der Katalog: jeder Baustein real gesetzt, bleibt im Template |
+| `fonts/` | Carlito und NewCM Sans Math, mitgeliefert |
+| `tests/`, `rules/` | Harness und Regelwerk |
+
+Ein Fork entsteht mit `make fork NAME=zsf-fach-fs2026`. Er enthält `main.typ`,
+`chapters/`, `graphics/` und ein eigenes Makefile — sonst nichts. Weil der
+Katalog gar nicht erst mitkommt, gibt es keine »template-only«-Blöcke, kein
+Strip-Skript und keinen Verifier dafür.
+
+## Die Module in `src/`
+
+| Datei | Inhalt |
+|---|---|
+| `config.typ` | die Stellschrauben, ihre Vorbelegungen und **alle** abgeleiteten Masse |
+| `palette.typ` | die 18 Kapitel-Slots, die Ton-Ableitung, der Ink-Vertrag |
+| `structure.typ` | Balken, Kapitelfarbe, `front`, `newcol`, Kopf und Fuss |
+| `blocks.typ` | die Box und ihre Vorbelegungen, Trenner, Listen, Ketten |
+| `tables.typ` | `tabular` |
+| `media.typ` | `fig`, `fig-side`, `caption`, das Bild-Höhenbudget |
+| `markup.typ` | Inline-Marker, Verweise, Formel-Marker, Grössenfarben |
+| `maths.typ` | die Operatoren, die Typst nicht mitbringt |
+| `index.typ` | Register: Eintrag, Sortierung, Ausgabe |
+
+**Masse haben genau eine Rechenstelle.** Jede Länge wird in `config.typ` aus
+den Stellschrauben gerechnet. Ein hartes `pt`/`mm`-Mass in einem anderen Modul
+meldet `make lint` — relative Masse (`em`, `%`, `fr`) sind erlaubt, weil sie
+mitskalieren.
+
+## Warum es wenig zu prüfen gibt
+
+Der Vorgänger brauchte 4158 Zeilen Verifier, weil LaTeX Fehler stillschweigend
+annahm: ein unbekannter Schlüssel, ein Regler, der einen anderen verwirft, ein
+Mass, das niemand liest. Typst bricht bei all dem selbst ab. Was bleibt, prüft
+etwas, das eine Sprache nicht sehen kann — Wirkung, Vollständigkeit, Grenze
+zwischen Inhalt und Gestaltung (`60_workflow`).
+
+## Beim Editieren von `src/`
+
+- Neue Gestaltungsmasse nach `config.typ`, nicht daneben.
+- Farbe kommt aus dem Ton, nie direkt: `tone-of(accent)` liefert alle Rollen.
+- Wer eine neue gefärbte **Fläche** baut, setzt dort eine Textfarbe — damit
+  erbt jeder Marker darauf automatisch den Kontrast (`30_struktur` → Ink).
+- Prüffrage vor jedem Eingriff: *Eckenradius aller Boxen ändern — reicht eine
+  Zeile?* Lautet die Antwort nein, fehlt Modularität.
