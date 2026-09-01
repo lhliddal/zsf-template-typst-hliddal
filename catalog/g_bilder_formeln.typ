@@ -7,16 +7,16 @@
 == Abbildungen <kat:bilder>
 
 #fig(image("../showcase/graphics/beispiel.svg"), cap: [Mustertext zum Formvergleich])
-#zweck[G-01 · `fig` — die eigenständige Abbildung mit Bildunterschrift.]
+#zweck("G-01", ("fig", "caption"))[G-01 · `fig` — die eigenständige Abbildung mit Bildunterschrift.]
 
 #fig-side(image("../showcase/graphics/beispiel.svg"))[#kurz]
-#zweck[G-02 · `fig-side` — Bild links, Text rechts.]
+#zweck("G-02", "fig-side")[G-02 · `fig-side` — Bild links, Text rechts.]
 
 #tabular(title: [G-03 · image in der Zelle], cols: (0.8, 1.2),
   [Bauform], [Bezeichnung],
   image("../showcase/graphics/beispiel.svg"), [Mustertext],
 )
-#zweck[Das nackte `image`; die Höhe stellt der Container.]
+#zweck("G-03", none)[Das nackte `image`; die Höhe stellt der Container.]
 
 == Formelsatz <kat:mathe>
 
@@ -25,19 +25,33 @@
   $grad f, divg vc(F), rot vc(F), diag(a, b), spann(v), proj(u)$ \
   $Arsinh(x), Arcosh(x), Artanh(x), vc(v)$
 ]
-#zweck[Alles, was Typst nicht selbst mitbringt — mehr gibt es nicht.]
+#zweck("G-04", ("sgn", "rang", "Spur", "Ker", "Bild", "eig", "grad", "divg", "rot", "diag", "spann", "proj", "Adj", "Arsinh", "Arcosh", "Artanh", "vc"))[Alles, was Typst nicht selbst mitbringt — mehr gibt es nicht.]
 
 #eintrag[G-05][markA – markD][
   $ markA(u) dot markB(v) + markD(z) = markC(w) $
 ]
-#zweck[Positional innerhalb EINER Herleitung: Quelle, Gegenstück, dritter Strang, Ziel.]
+#zweck("G-05", ("markA", "markB", "markC", "markD"))[Positional innerhalb EINER Herleitung: Quelle, Gegenstück, dritter Strang, Ziel.]
 
 #eintrag[G-06][quantity][
   $ #quantity("Kraft", $F$) = m dot a, quad W = #quantity("Kraft", $F$) dot #quantity("Weg", $s$) $
 ]
-#zweck[Eine Farbe gehört im ganzen Dokument EINER Grösse.]
+#zweck("G-06", "quantity")[Eine Farbe gehört im ganzen Dokument EINER Grösse.]
+
+#eintrag[G-08][palette · tone-of][
+  #grid(columns: 6, gutter: 2pt, ..palette.slice(0, 6).map(a => {
+    let t = tone-of(a)
+    stack(
+      block(width: 100%, height: 6pt, fill: t.accent),
+      block(width: 100%, height: 5pt, fill: t.bar),
+      block(width: 100%, height: 5pt, fill: t.title-back),
+      block(width: 100%, height: 5pt, fill: t.zebra),
+    )
+  }))
+]
+#zweck("G-08", ("palette", "tone-of"))[Die Kapitelfarben und die daraus
+abgeleiteten Rollen. Vollständig in der Referenz unter »Palette«.]
 
 #steps[G-07 · given · step · target][
   #given[Voraussetzung] #sym.arrow.r #step[Schritt] #sym.arrow.r #target[Ziel]
 ]
-#zweck[Die Glieder einer Kette einzeln, wenn `case` zu starr ist.]
+#zweck("G-07", ("given", "step", "target"))[Die Glieder einer Kette einzeln, wenn `case` zu starr ist.]
