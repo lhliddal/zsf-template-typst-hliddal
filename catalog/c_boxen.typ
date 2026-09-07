@@ -31,13 +31,18 @@ Eine Box und fünf Vorbelegungen. Jeder Eintrag zeigt denselben Mustertext.
 #picture[C-07 · picture][
   #context {
     let t = tone()
-    box(width: 100%, height: 1.1cm)[
-      #place(left + bottom, dx: 15%, dy: -4pt, line(length: 68%, stroke: 0.6pt + t.frame-hard))
-      #place(left + bottom, dx: 24%, dy: -2pt, line(angle: -90deg, length: 0.95cm, stroke: 0.6pt + t.frame-hard))
-      #place(left + bottom, dx: 24%, dy: -4pt, line(start: (0pt, 0pt), end: (40pt, -22pt), stroke: 1.2pt + t.accent))
-      #place(left + bottom, dx: 24% + 43pt, dy: -28pt, diagram-label[$vec(v)$])
-      #place(left + bottom, dx: 83%, dy: -12pt, diagram-label[$x$])
-      #place(left + bottom, dx: 16%, dy: -0.9cm, diagram-label[$y$])
+    box(width: 100%, height: 1.2cm)[
+      #place(center + horizon)[
+        #box(width: 3.6cm, height: 1.1cm)[
+          #place(center + horizon, line(start: (-40pt, 0pt), end: (40pt, 0pt), stroke: 0.6pt + t.frame-soft))
+          #place(center + horizon, line(start: (0pt, -16pt), end: (0pt, 16pt), stroke: 0.6pt + t.frame-soft))
+          #place(center + horizon, circle(radius: 13pt, stroke: 0.8pt + t.frame-hard))
+          #place(center + horizon, line(start: (0pt, 0pt), end: (9pt, -9pt), stroke: 1.3pt + t.accent))
+          #place(center + horizon, dx: 8pt, dy: -7pt, diagram-label[$arrow(v)$])
+          #place(center + horizon, dx: 46pt, dy: -1pt, diagram-label[$x$])
+          #place(center + horizon, dx: 1pt, dy: -21pt, diagram-label[$y$])
+        ]
+      ]
     ]
   }
 ]
