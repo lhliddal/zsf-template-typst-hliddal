@@ -35,18 +35,24 @@ Zelle zu wiederholen ist der Fehler, den die Vorbelegung vermeidet.]
   // Warn-Box automatisch Rot. Nur innerhalb von `context`.
   #context {
     let t = tone()
-    box(width: 100%, height: 2.2cm)[
+    box(width: 100%, height: 2.0cm)[
       #place(center + horizon)[
-        #let r = 26pt
+        #let r = 24pt
         #box(width: 3.2cm, height: 2cm)[
-          #place(left + horizon, dx: 0.4cm, circle(radius: r, stroke: 1pt + t.accent))
-          #place(left + horizon, dx: 0.4cm + r, line(length: r, stroke: 1pt + t.frame-hard))
+          // Achsen
+          #place(center + horizon, line(length: 3.0cm, stroke: 0.6pt + t.frame-soft))
+          #place(center + horizon, line(angle: 90deg, length: 1.8cm, stroke: 0.6pt + t.frame-soft))
+          // Kreis & Radiusvektor
+          #place(center + horizon, circle(radius: r, stroke: 1pt + t.frame-hard))
+          #place(center + horizon, line(start: (0pt, 0pt), end: (17pt, -17pt), stroke: 1.2pt + t.accent))
+          #place(center + horizon, dx: 11pt, dy: -12pt, diagram-label[$r$])
+          #place(center + horizon, dx: 1.4cm, dy: -6pt, diagram-label[$x$])
+          #place(center + horizon, dx: 4pt, dy: -0.85cm, diagram-label[$y$])
         ]
       ]
     ]
   }
-  #place(left + top, dx: 0.2cm, diagram-label[Achse])
-  #caption[Mit Typsts eigenen Formen — für mehr gibt es `cetz`.]
+  #caption[Geometrische Skizze mit Typsts Formen — Farben dynamisch über `tone()`.]
 ]
 
 #panel(tone: "neutral")[Zeichnen im Grossen][

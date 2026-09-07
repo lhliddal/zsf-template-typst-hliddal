@@ -133,12 +133,15 @@
     }
     if weight == "loud" {
       // Die Titelfläche setzt eine eigene Textfarbe und besitzt damit die Tinte.
+      // Auch wenn der Rumpf randlos ist (pad: "none", z. B. bei Tabellen),
+      // behält die Kopfzeile ihren waagrechten Innenabstand.
+      let title-px = if pad == "none" { c.pad.x } else { px }
       block(
         width: 100%,
         above: 0pt,
         below: 0pt,
         fill: t.title-back,
-        inset: (x: px, y: c.pad.y-tight),
+        inset: (x: title-px, y: c.pad.y-tight),
         full-edges(text(fill: t.title-text, label)),
       )
     } else if quiet {

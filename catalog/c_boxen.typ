@@ -29,10 +29,17 @@ Eine Box und fünf Vorbelegungen. Jeder Eintrag zeigt denselben Mustertext.
 #zweck("C-06", "formula")[Formelblock: betont geflächt, zentriert, harte Kontur.]
 
 #picture[C-07 · picture][
-  #context box(width: 100%, height: 1.1cm)[#place(center + horizon, circle(
-    radius: 12pt,
-    stroke: 1pt + tone().accent,
-  ))]
+  #context {
+    let t = tone()
+    box(width: 100%, height: 1.1cm)[
+      #place(left + bottom, dx: 15%, dy: -4pt, line(length: 68%, stroke: 0.6pt + t.frame-hard))
+      #place(left + bottom, dx: 24%, dy: -2pt, line(angle: -90deg, length: 0.95cm, stroke: 0.6pt + t.frame-hard))
+      #place(left + bottom, dx: 24%, dy: -4pt, line(start: (0pt, 0pt), end: (40pt, -22pt), stroke: 1.2pt + t.accent))
+      #place(left + bottom, dx: 24% + 43pt, dy: -28pt, diagram-label[$vec(v)$])
+      #place(left + bottom, dx: 83%, dy: -12pt, diagram-label[$x$])
+      #place(left + bottom, dx: 16%, dy: -0.9cm, diagram-label[$y$])
+    ]
+  }
 ]
 #zweck("C-07", "picture")[Container für eine selbstgezeichnete Abbildung.]
 
