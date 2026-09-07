@@ -131,6 +131,18 @@ if ! grep -qF "Stellschraube »palette«" <<<"$pal_out"; then
   fail=1
 fi
 
+# check-overflow mit ungültigem Typ
+{
+  echo '#import "@local/zsf:0.1.0": *'
+  echo '#show: zsf.with(check-overflow: "ja")'
+  echo '= K'
+} >tests/out/e.typ
+of_out=$(typst compile tests/out/e.typ tests/out/e.pdf --root . 2>&1)
+if ! grep -qF "Stellschraube »check-overflow«" <<<"$of_out"; then
+  echo "  check-overflow mit falschem Typ — keine verständliche Meldung"
+  fail=1
+fi
+
 # Gegenprobe: die richtige Schreibweise darf NICHT scheitern. Ohne sie könnte
 # dieser Test grün sein, weil einfach alles abbricht.
 {

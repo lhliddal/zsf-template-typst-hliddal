@@ -76,9 +76,11 @@ Boxen durchlaufen zu lassen.
 | `lang`, `region` | `"de"`, `"CH"` | Silbentrennung und Sprachregeln |
 | `justify` | `false` | Blocksatz statt Flattersatz |
 | `bind-units` | `true` | hält Zahl und Einheit in einer Zeile (`10 m/s`) |
+| `check-overflow` | `false` | bricht bei überbreiten abgesetzten Formeln laut ab |
 
 Flattersatz ist die Vorbelegung, weil der Blocksatz in ~50 mm schmalen Spalten
-entweder trennen oder Wortzwischenräume aufblähen muss.
+entweder trennen oder Wortzwischenräume aufblähen muss. `check-overflow: true`
+prüft abgesetzte Formeln gegen den Satzspiegel und bricht bei Überlauf laut ab.
 
 ## Farbe und Bausteine
 

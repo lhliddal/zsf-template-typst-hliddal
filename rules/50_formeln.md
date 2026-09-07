@@ -25,7 +25,7 @@ Formeln stehen in `formula[…]`, benannte Formeln in
 
 Lange Gleichungen in schmalen Spalten über mehrere Zeilen aufteilen, höchstens
 eine Gleichung pro Zeile. Grössere Matrizen nie nebeneinander, sondern
-untereinander.
+untereinander. Überbreite Gleichungen bricht `check-overflow: true` im Build laut ab.
 
 ## Farbe in Formeln
 

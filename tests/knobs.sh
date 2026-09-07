@@ -149,6 +149,23 @@ if [ "$(qbw true)" = "$(qbw false)" ]; then
   fail=1
 fi
 
+# `check-overflow` bricht bei überbreiten Formeln laut ab.
+overflow_probe() {
+  local val="$1"
+  cat <<TYP >tests/out/of.typ
+#import "@local/zsf:0.1.0": *
+#show: zsf.with(title: "P", columns: 4, check-overflow: $val)
+= K
+$ a + b + c + d + e + f + g + h + i + j + k + l + m + n + o + p + q = 0 $
+TYP
+  typst compile tests/out/of.typ tests/out/of.pdf --root . >/dev/null 2>&1
+  echo $?
+}
+if [ "$(overflow_probe false)" -ne 0 ] || [ "$(overflow_probe true)" -eq 0 ]; then
+  echo "  check-overflow — KEINE WIRKUNG"
+  fail=1
+fi
+
 # `subject` und `build` stehen nur in den PDF-Metadaten und sind auf der Seite
 # nicht sichtbar — geprüft werden sie deshalb in identity.sh, nicht hier.
 

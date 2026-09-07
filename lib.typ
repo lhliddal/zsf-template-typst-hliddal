@@ -73,6 +73,13 @@
     slots.push(slot)
   }
 
+  if type(c.check-overflow) != bool {
+    panic(
+      "Stellschraube »check-overflow«: erwartet bool — nicht "
+        + repr(c.check-overflow),
+    )
+  }
+
   _c.cfg.update(c)
 
   // ── PDF-Identität ──────────────────────────────────────────
@@ -114,6 +121,22 @@
     spacing: c.par-space,
   )
   show math.equation: set text(font: c.math-font)
+  show math.equation.where(block: true): it => if c.check-overflow {
+    layout(size => context {
+      let m = measure(it)
+      if m.width > size.width + 0.5pt {
+        panic(
+          "Gleichung ragt über die Spaltenbreite hinaus ("
+            + repr(m.width) + " > " + repr(size.width)
+            + "). Bitte mit \\ umbrechen oder als mehrzeiligen Block setzen:\n"
+            + repr(it.body),
+        )
+      }
+      it
+    })
+  } else {
+    it
+  }
   set raw(lang: none)
   show raw: set text(font: c.mono-font, size: c.mono-scale * 1em)
 

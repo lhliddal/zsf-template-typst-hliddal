@@ -69,6 +69,9 @@
   // Hält Zahl und Einheit zusammen (»10 m/s«), damit die Zeile nicht dazwischen
   // bricht. Siehe `readability.typ`.
   bind-units: true,
+  // Prüft abgesetzte Formeln auf Spaltenüberlauf. Bei `true` bricht der Build
+  // ab, wenn eine Gleichung breiter als der verfügbare Satzspiegel ist.
+  check-overflow: false,
 
   // ── Farbe ──────────────────────────────────────────────────
   palette: seeds,

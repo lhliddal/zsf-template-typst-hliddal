@@ -84,7 +84,7 @@ werden markiert und landen damit automatisch im Register.
 `make-index`; `tone()` gibt einer selbst gezeichneten Skizze die Farbwelt, in
 der sie steht.
 
-**Stellschrauben** — 30 benannte Argumente von `zsf(...)`, von `size` und
+**Stellschrauben** — 31 benannte Argumente von `zsf(...)`, von `size` und
 `density` bis `palette` und `columns`. Ein Tippfehler bricht den Build.
 
 Vollständig gesetzt in der Referenz (`make build`), nebeneinander im Katalog
