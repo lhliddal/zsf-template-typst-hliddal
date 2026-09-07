@@ -151,9 +151,11 @@
     align: cell-align,
     // Die Aussenkante zeichnet der Rahmen der Box — eine Tabellenlinie ist
     // gerade und endete an den runden Ecken im Nichts.
+    // Das Gitter nutzt dieselbe harte Tinte wie der Boxrahmen (frame-hard),
+    // damit anstossende Linien die gleiche Deckkraft haben.
     stroke: (x, y) => (
-      left: if x > 0 and grid == "both" { c.rule + t.frame-soft },
-      top: if y > 0 and grid != "none" { c.rule + t.frame-soft },
+      left: if x > 0 and grid == "both" { c.rule + t.frame-hard },
+      top: if y > 0 and grid != "none" { c.rule + t.frame-hard },
     ),
     fill: (x, y) => {
       let i = y - (if header { 1 } else { 0 })
