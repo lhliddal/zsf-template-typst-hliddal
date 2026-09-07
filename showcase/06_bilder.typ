@@ -21,7 +21,7 @@ ein Bild in die Zeile, als eigener Block füllt es einen. Beides ist vorbelegt.
   title: [Bild in der Zelle], cols: (0.9, 1, 1),
   [Bauform], [Bezeichnung], [Kennwert],
   image("graphics/beispiel.svg"), [Kreisprofil], [$A = pi r^2$],
-  image("graphics/beispiel.svg"), [dasselbe Bild], [gleiche Höhe],
+  image("graphics/beispiel-b.svg"), [Rechteckprofil], [gleiche Höhe],
 )
 #after[In der Zelle steht das nackte #lbl[image] — die Tabelle setzt die Höhe.
 Eine Bildspalte ist dadurch von selbst einheitlich hoch, und die Höhe pro

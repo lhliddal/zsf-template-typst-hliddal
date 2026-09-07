@@ -12,9 +12,10 @@
 #fig-side(image("../showcase/graphics/beispiel.svg"))[#kurz]
 #zweck("G-02", "fig-side")[G-02 · `fig-side` — Bild links, Text rechts.]
 
-#tabular(title: [G-03 · image in der Zelle], cols: (0.8, 1.2),
+#tabular(title: [G-03 · image in der Zelle], cols: (0.7, 1.3),
   [Bauform], [Bezeichnung],
-  image("../showcase/graphics/beispiel.svg"), [Mustertext],
+  image("../showcase/graphics/beispiel.svg"), [Mustertext ohne Höhenangabe],
+  image("../showcase/graphics/beispiel-b.svg"), [Zweite Zeile, gleich hoch],
 )
 #zweck("G-03", none)[Das nackte `image`; die Höhe stellt der Container.]
 
