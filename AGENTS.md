@@ -1,6 +1,6 @@
 # ZSF Template (Typst) — AGENTS.md
 
-> ERZEUGT — rules-hash:f95fafb95a5f72ce
+> ERZEUGT — rules-hash:04d7033dcd9e5e99
 >
 > Quelle: `rules/*.md`. Nicht direkt bearbeiten.
 > Ändern: `rules/*.md` editieren → `make sync-rules`. Drift: `make check-rules`.
@@ -28,6 +28,7 @@ make fork NAME=zsf-fach-fs2026
 - `40_tabellen.md` — chapters — Tabellen
 - `50_formeln.md` — chapters — Mathematischer Satz
 - `60_workflow.md` — project — Bauen, prüfen, forken, Dateien platzieren
+- `70_github.md` — project — Namenskonventionen, PDF-Identity, Commit-Attribution
 - `80_didaktik.md` — chapters — Inhaltliches Prinzip — was drinsteht und wie erklärt wird
 
 ## Regeln
@@ -694,6 +695,37 @@ Shell, CI und fremde Systeme.
 
 Commit-Autor ist ausschliesslich die menschliche Git-Identität. Niemals
 `Co-Authored-By`, Modellnamen oder Tool-Signaturen in Commit-Nachrichten.
+
+### `70_github.md`
+
+## Identity und Namenskonventionen
+
+- **Repository:** `eth-<fach>-zsf-<semester>-hliddal`
+- **PDF-Dateiname:** `<fach>_<semester>_hliddal.pdf`
+- **Semesterformat:** `fsYYYY` oder `hsYYYY`
+- **Release-Tags:** Semantische Versionierung `vMAJOR.MINOR.PATCH`
+
+Der `Makefile` im Fach-Fork setzt den Basisnamen und Titel für die PDF-Ausgabe:
+
+```make
+PDF_BASENAME  ?= analysis2_fs2026_hliddal
+SUBJECT_TITLE ?= Analysis II
+```
+
+## Commit-Attribution & Git-Hygiene
+
+Commit-Autor und Committer verwenden ausschliesslich die menschliche Git-Identität
+des Repository-Eigentümers.
+
+**Strikt verboten:** Niemals `Co-Authored-By`-Trailer, Modellnamen, Tool-Signaturen
+oder sonstige KI-/Agenten-Attribution in Commit-Nachrichten. KI-Systeme sind
+Werkzeuge und erscheinen auf GitHub nicht als Contributors.
+
+## PDF-Identity
+
+Titel, Autor und Versionierung werden zentral über die Stellschrauben von `zsf(...)`
+in `main.typ` und den Makefile gesteuert. `tests/identity.sh` prüft die Metadaten
+nach dem Build und darf in Forks nicht entfernt werden.
 
 ### `80_didaktik.md`
 
