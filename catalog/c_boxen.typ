@@ -29,22 +29,7 @@ Eine Box und fünf Vorbelegungen. Jeder Eintrag zeigt denselben Mustertext.
 #zweck("C-06", "formula")[Formelblock: betont geflächt, zentriert, harte Kontur.]
 
 #picture[C-07 · picture][
-  #context {
-    let t = tone()
-    box(width: 100%, height: 1.2cm)[
-      #place(center + horizon)[
-        #box(width: 3.6cm, height: 1.1cm)[
-          #place(center + horizon, line(start: (-40pt, 0pt), end: (40pt, 0pt), stroke: 0.6pt + t.frame-soft))
-          #place(center + horizon, line(start: (0pt, -16pt), end: (0pt, 16pt), stroke: 0.6pt + t.frame-soft))
-          #place(center + horizon, circle(radius: 13pt, stroke: 0.8pt + t.frame-hard))
-          #place(center + horizon, line(start: (0pt, 0pt), end: (9pt, -9pt), stroke: 1.3pt + t.accent))
-          #place(center + horizon, dx: 8pt, dy: -7pt, diagram-label[$arrow(v)$])
-          #place(center + horizon, dx: 46pt, dy: -1pt, diagram-label[$x$])
-          #place(center + horizon, dx: 1pt, dy: -21pt, diagram-label[$y$])
-        ]
-      ]
-    ]
-  }
+  #image("../showcase/graphics/beispiel.svg", height: 1.1cm)
 ]
 #zweck("C-07", "picture")[Container für eine selbstgezeichnete Abbildung.]
 
