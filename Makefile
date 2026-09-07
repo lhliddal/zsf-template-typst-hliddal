@@ -23,7 +23,7 @@ RELEASE_ID ?= DEV-$(BUILD_DATE)
 BUILD_ID   := $(shell date -u +%Y%m%dT%H%M%SZ)-$(shell git rev-parse --short HEAD 2>/dev/null || echo nogit)
 TYPST_ARGS := --root $(ROOT) --input release=$(RELEASE_ID) --input build=$(BUILD_ID)
 
-.PHONY: all build watch catalog catalog-status fonts check test errors lint knobs coverage identity warnings install fork fmt sync-rules check-rules clean help
+.PHONY: all build watch catalog catalog-status fonts check test errors lint knobs coverage identity warnings fork-check install fork fmt sync-rules check-rules clean help
 
 all: build
 
@@ -45,7 +45,7 @@ catalog: install
 catalog-status:
 	@if [ ! -f $(CATALOG) ]; then echo "Katalog: $(CATALOG) fehlt — 'make catalog'."; \
 	elif [ -n "$$(find catalog src lib.typ -newer $(CATALOG) -print -quit 2>/dev/null)" ]; then \
-	  echo "Katalog: $(CATALOG) ist VERALTET — 'make catalog'."; \
+	  echo "Hinweis: $(CATALOG) ist veraltet — 'make catalog'."; \
 	else echo "Katalog: $(CATALOG) aktuell."; fi
 
 ## install — Package unter @local/zsf verfügbar machen (Symlink auf dieses Repo)
@@ -66,9 +66,9 @@ fonts:
 	@cp fonts/* "$(HOME)/Library/Fonts/" && echo "Carlito und NewCM Sans Math installiert"
 
 ## check — der ganze Harness
-check: build test errors lint knobs coverage warnings identity check-rules
+check: build test errors lint knobs coverage warnings identity fork-check check-rules
 	@$(MAKE) -s catalog-status
-	@echo "check: alles grün"
+	@echo "check: alle Prüfungen grün"
 
 ## test — Zusicherungen über die reinen Funktionen
 test: install
@@ -96,7 +96,11 @@ warnings: install
 
 ## identity — PDF-Metadaten nach dem Build
 identity: build
-	@bash tests/identity.sh $(SHOWCASE) "$(RELEASE_ID)"
+	@bash tests/identity.sh $(SHOWCASE) "$(RELEASE_ID)" "$(BUILD_ID)"
+
+## fork-check — typst init + make build in einem Wegwerf-Verzeichnis
+fork-check: install
+	@bash tests/fork.sh
 
 ## sync-rules — rules/*.md → AGENTS.md
 sync-rules:
@@ -108,7 +112,8 @@ check-rules:
 
 ## fmt — Quellen formatieren (typstyle, falls installiert)
 fmt:
-	@command -v typstyle >/dev/null && typstyle -i lib.typ src/*.typ showcase/*.typ template/**/*.typ tests/*.typ || echo "typstyle nicht installiert — übersprungen"
+	@if ! command -v typstyle >/dev/null; then echo "typstyle nicht installiert — übersprungen"; \
+	else typstyle -i lib.typ src/*.typ showcase/*.typ catalog/*.typ template/main.typ template/chapters/*.typ tests/*.typ; fi
 
 ## clean — erzeugte Dateien entfernen
 clean:

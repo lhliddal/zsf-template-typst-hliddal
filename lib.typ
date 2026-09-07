@@ -12,8 +12,9 @@
 // Regler am Baustein — oder gar nicht.
 
 #import "src/palette.typ": seeds as palette, tone-of
-#import "src/structure.typ": front, newcol
-#import "src/blocks.typ": panel, warn, formula, picture, code, steps, facts, item, split, sep, note, before, after, given, step, target, case
+#import "src/structure.typ": front, newcol, active-tone as tone
+#import "src/blocks.typ": panel, warn, formula, picture, code, steps, facts, item, split, sep, note, before, after, given, step, target, case, gap
+#import "src/config.typ": density-scope
 #import "src/tables.typ": tabular
 #import "src/media.typ": fig, fig-side, caption
 #import "src/markup.typ": kw, lbl, danger, concl, hl, diagram-label, xref, sec-ref, markA, markB, markC, markD, quantity, script-ref
@@ -39,6 +40,39 @@
   }
 
   let c = _c.derive(_c.defaults + given-opts)
+  // Die Palette rotiert über alles ausser Slot 0 (der gehört dem Front-Matter).
+  // Mit weniger als zwei Farben bliebe dafür nichts übrig, und die Rotation
+  // teilte durch null — ein roher Compiler-Fehler mitten in `structure.typ`
+  // statt einer Meldung, die sagt, welche Stellschraube gemeint ist.
+  if type(c.palette) != array or c.palette.len() < 2 {
+    panic(
+      "Stellschraube »palette«: mindestens zwei Farben nötig — Slot 0 gehört dem "
+        + "Front-Matter, die Kapitel rotieren über den Rest. Erhalten: "
+        + repr(c.palette),
+    )
+  }
+  // Eine Grössenfarbe sagt nur etwas, solange sie GENAU einer Grösse gehört.
+  // Ohne diese Prüfung teilten sich zwei Namen still denselben Slot, und ein
+  // Slot ausserhalb der Liste rutschte durch `calc.rem` lautlos auf einen
+  // fremden: `("Kraft": 0, "Moment": 0, "Weg": 8)` setzte alle drei in
+  // dasselbe Rot. Der LaTeX-Vorgänger brach dafür ab, dieser hier nicht.
+  let slots = ()
+  for (name, slot) in c.quantities {
+    if type(slot) != int or slot < 0 or slot >= _p.quantity-colors.len() {
+      panic(
+        "Grösse »" + name + "«: Slot muss eine ganze Zahl von 0 bis "
+          + str(_p.quantity-colors.len() - 1) + " sein — nicht " + repr(slot),
+      )
+    }
+    if slot in slots {
+      panic(
+        "Grösse »" + name + "«: Slot " + str(slot) + " ist schon vergeben. "
+          + "Eine Farbe, die zwei Grössen bedeutet, sagt nichts mehr aus.",
+      )
+    }
+    slots.push(slot)
+  }
+
   _c.cfg.update(c)
 
   // ── PDF-Identität ──────────────────────────────────────────
@@ -81,7 +115,7 @@
   )
   show math.equation: set text(font: c.math-font)
   set raw(lang: none)
-  show raw: set text(font: c.mono-font, size: c.font-size.dense)
+  show raw: set text(font: c.mono-font, size: c.mono-scale * 1em)
 
   // Verweise tragen die Farbe ihres Ziels; nackte URLs bleiben dezent blau.
   show link: it => if type(it.dest) == str { text(fill: _p.link-color, it) } else { it }

@@ -9,7 +9,7 @@
 
 #import "../src/palette.typ": seeds, tone-of, light-of, neutral-tone, warn-tone, ink-muted, ink-faint, ink-ghost
 #import "../src/structure.typ": accent-for
-#import "../src/index.typ": sort-key
+#import "../src/index.typ": sort-key, symbol-prefix
 #import "../src/config.typ": defaults, derive
 #import "../src/readability.typ": unit-pattern
 
@@ -26,6 +26,18 @@
 // Umlaute sortieren zwischen ihren Nachbarn, nicht ans Ende.
 #assert(sort-key("Ähnlich") < sort-key("Algebra"))
 #assert(sort-key("Zähler") > sort-key("Wurzel"))
+
+// Ein Begriff, der NUR aus Zeichen besteht, behielte nach dem Abräumen einen
+// leeren Schlüssel — und fiel damit stillschweigend aus dem Register. Gerade
+// Einheiten und Symbole sind aber die wertvollsten Einträge (`30_struktur`).
+#for s in ("Ω", "∇", "∂", "→", "∑") {
+  assert(sort-key(s).trim() != "", message: "Symbol verliert seinen Schlüssel: " + s)
+  assert(sort-key(s).starts-with(symbol-prefix), message: "Symbol nicht als solches erkannt: " + s)
+  // Und sie stehen als Gruppe vor dem Alphabet, nicht verstreut dahinter.
+  assert(sort-key(s) < sort-key("Ableitung"))
+}
+// Ein Begriff mit Buchstaben bleibt ein normaler Eintrag, auch mit Zeichen darin.
+#assert(not sort-key("C¹-Funktion").starts-with(symbol-prefix))
 
 // ── Kapitelfarben ────────────────────────────────────────────
 // Slot 0 gehört dem Front-Matter und wird von keinem Kapitel belegt.
@@ -200,6 +212,32 @@
   assert.eq(f.font-size.chapter, base.font-size.chapter)
   assert.eq(f.font-size.section, base.font-size.section)
   assert.eq(f.font-size.title, base.font-size.title)
+  assert.eq(f.font-size.tag, base.font-size.tag)
+}
+// Anmerkung und Diagramm-Beschriftung stehen IN einem Baustein: Sie folgen
+// `content-scale` und bleiben dabei kleiner als der Inhalt, neben dem sie
+// stehen. Vorher hingen sie an der blossen Grundgrösse — bei
+// `content-scale: 0.75` war die Anmerkung unter einer Formel die grösste
+// Schrift der Box.
+#for f in (base, inhalt, derive(defaults + (content-scale: 1.4))) {
+  assert(f.font-size.note < f.font-size.body, message: "note muss unter body bleiben")
+  assert(f.font-size.label < f.font-size.note, message: "label muss unter note bleiben")
+}
+#assert(inhalt.font-size.note < base.font-size.note)
+#assert(inhalt.font-size.label < base.font-size.label)
+
+// Code ist ein Verhältnis, keine Grösse: Als absolutes Mass an `dense` gebunden
+// war Inline-Code im Fliesstext bei kleiner Prosa grösser als sie. Als Faktor
+// gilt er in jeder Umgebung und ändert sich mit keinem Rollen-Faktor.
+#assert(base.mono-scale < 1.0)
+// Die Autorenzeile des Dokumentkopfs steht auf einer Titelfläche und gehört
+// damit zu den Balken: Sie darf sich von keinem Rollen-Faktor mitziehen lassen.
+#for f in (inhalt, prosa) {
+  assert.eq(f.font-size.header-note, base.font-size.header-note)
+}
+#assert(base.font-size.header-note < base.font-size.doc-title)
+#for f in (inhalt, prosa, derive(defaults + (size: 6pt))) {
+  assert.eq(f.mono-scale, base.mono-scale, message: "mono-scale ist ein Verhältnis")
 }
 
 // Gedämpfte Tinte: drei Stufen, unterscheidbar und in dieser Reihenfolge.
@@ -238,5 +276,11 @@
 // Bildhöhen sind Inhalt und folgen der Dichte nicht.
 #assert.eq(dense.image-height, base.image-height)
 #assert(base.image-height < base.figure-height)
+
+// ── Abstandsskala ───────────────────────────────────────────
+// Die vier Stufen sind echt gestaffelt: xs < s < m < l
+#assert(base.space.xs < base.space.s)
+#assert(base.space.s < base.space.m)
+#assert(base.space.m < base.space.l)
 
 Alle Zusicherungen erfüllt.

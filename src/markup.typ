@@ -15,14 +15,50 @@
 #import "structure.typ": accent-for, ref-target
 #import "index.typ": idx
 
+// Der Registereintrag braucht den Begriff als Text; Auszeichnung bleibt im
+// Satz, nicht im Register. Gelesen wird der ganze Baum, nicht nur die oberste
+// Ebene: `kw[Satz von *Taylor*]` ist keine Textzelle, sondern eine Sequenz aus
+// Text, Leerraum und `strong` — die frühere Fassung fand dort nichts und liess
+// den Eintrag ersatzlos weg. Ohne Meldung, in genau dem Baustein, an dem das
+// Register hängt.
+#let _space = [ ].func()
+#let _wrappers = (strong, emph, underline, overline, super, sub, highlight, link)
+
+#let _plain(c) = {
+  if type(c) == str { return c }
+  if type(c) != content { return none }
+  let f = c.func()
+  if f == text { return c.text }
+  if f in (_space, linebreak) { return " " }
+  if c.has("children") {
+    let parts = c.children.map(_plain)
+    // Ein einziges unlesbares Kind macht die ganze Lesung falsch: Aus
+    // `kw[$C^1$-Funktion]` würde sonst der Eintrag »-Funktion«, und ein
+    // falscher Eintrag ist schlechter als eine Fehlermeldung.
+    if parts.any(p => p == none) { return none }
+    return parts.join("")
+  }
+  if f in _wrappers and c.has("body") { return _plain(c.body) }
+  none
+}
+
 /// Fachbegriff — der primäre Scan-Anker. Landet automatisch im Register.
-/// `index: false` für den Begriff, der nicht ins Register soll.
-#let kw(body, index: true, sort: none) = {
+///
+/// - `index: false` für den Begriff, der nicht ins Register soll
+/// - `term`: die Registerform, wenn der Satz sie nicht hergibt
+///   (`kw(term: "C¹-Funktion")[$C^1$-Funktion]`)
+/// - `sort`: abweichender Sortierschlüssel
+#let kw(body, index: true, term: none, sort: none) = {
   if index {
-    // Der Registereintrag braucht den Begriff als Text; Auszeichnung bleibt
-    // im Satz, nicht im Register.
-    let plain = if type(body) == str { body } else if body.has("text") { body.text } else { none }
-    if plain != none { idx(plain, sort: sort) }
+    let plain = if term != none { term } else { _plain(body) }
+    if plain == none {
+      panic(
+        "kw: dieser Begriff lässt sich nicht als Text für das Register lesen "
+          + "(Formel, Bild oder Ähnliches im Begriff). Registerform angeben — "
+          + "kw(term: \"…\")[…] — oder mit kw(index: false)[…] darauf verzichten.",
+      )
+    }
+    idx(plain, sort: sort)
   }
   strong(body)
 }
@@ -115,5 +151,8 @@
   // `quantity-colors: false` nimmt für den S/W-Druck die Farbe zurück, ohne
   // die Vergabe anzutasten — der Satz bleibt sonst Zeichen für Zeichen gleich.
   if not c.quantity-colors { return body }
-  ink(quantity-colors.at(calc.rem(c.quantities.at(name), quantity-colors.len())), body)
+  // Kein `calc.rem` mehr: Es liess einen Slot ausserhalb der Liste lautlos auf
+  // einen fremden rutschen. Bereich und Eindeutigkeit prüft `zsf()` einmal am
+  // Dokumentkopf, wo die Vergabe steht.
+  ink(quantity-colors.at(c.quantities.at(name)), body)
 }

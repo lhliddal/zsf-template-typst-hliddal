@@ -19,32 +19,54 @@
 // ── Sortierschlüssel ─────────────────────────────────────────
 // DIN 5007-1: ä wie a, ö wie o, ü wie u, ß wie ss. Zeichen ausserhalb von
 // Buchstaben und Ziffern fallen weg, damit »C¹-Funktion« bei C einsortiert.
+//
+// Ein Begriff, der NUR aus solchen Zeichen besteht — »Ω«, »∇«, »∂« —, behielte
+// dabei einen leeren Schlüssel und fiel vorher stillschweigend aus dem
+// Register. Ausgerechnet Einheiten und Symbole nennt `30_struktur` als den
+// grössten Hebel des Registers. Sie bekommen deshalb ihren Schlüssel aus dem
+// Begriff selbst, mit führendem Leerzeichen: Es sortiert vor jedem Buchstaben
+// und ist zugleich das Kennzeichen, an dem das Register sie zur Gruppe
+// »Symbole« zusammenfasst.
+#let symbol-prefix = " "
+
 #let sort-key(s) = {
   let out = lower(s)
   for (from, to) in (("ä", "a"), ("ö", "o"), ("ü", "u"), ("ß", "ss"), ("é", "e"), ("è", "e"), ("à", "a")) {
     out = out.replace(from, to)
   }
-  out.replace(regex("[^a-z0-9 ]"), "")
+  let plain = out.replace(regex("[^a-z0-9 ]"), "")
+  if plain.trim() == "" { symbol-prefix + out } else { plain }
+}
+
+// Ein leerer Begriff kann nichts adressieren und wäre im Register unsichtbar —
+// derselbe stille Fehlschlag wie oben, nur eine Stufe früher.
+#let _check-term(term) = {
+  if type(term) != str or term.trim() == "" {
+    panic("Registereintrag ohne Begriff: " + repr(term))
+  }
 }
 
 /// Unsichtbarer Registereintrag.
 /// - `sort`: abweichender Sortierschlüssel (flektierte Form auf das Lemma bringen)
-#let idx(term, sort: none) = [
-  #metadata((
-    term: term,
-    key: sort-key(if sort == none { term } else { sort }),
-    see: none,
-  ))#_mark
-]
+#let idx(term, sort: none) = {
+  _check-term(term)
+  [#metadata((
+      term: term,
+      key: sort-key(if sort == none { term } else { sort }),
+      see: none,
+    ))#_mark]
+}
 
 /// Verweis-Eintrag: »Synonym, siehe Ziel«. Am kanonischen Ort des Ziels setzen.
-#let idx-see(term, target, sort: none) = [
-  #metadata((
-    term: term,
-    key: sort-key(if sort == none { term } else { sort }),
-    see: target,
-  ))#_mark
-]
+#let idx-see(term, target, sort: none) = {
+  _check-term(term)
+  _check-term(target)
+  [#metadata((
+      term: term,
+      key: sort-key(if sort == none { term } else { sort }),
+      see: target,
+    ))#_mark]
+}
 
 // ── Das Register ─────────────────────────────────────────────
 // Der Locator ist derselbe, den `xref` benutzt — Abschnittsnummer, oder das
@@ -65,7 +87,6 @@
   for e in raw-entries {
     let v = e.value
     let k = v.key
-    if k == "" { continue }
     let bucket = grouped.at(k, default: (term: v.term, see: v.see, locs: ()))
     if v.see != none { bucket.see = v.see }
     bucket.locs.push(e.location())
@@ -75,6 +96,23 @@
   let keys = grouped.keys().sorted()
   let current-letter = ""
 
+  // Zweimal derselbe Abschnitt ist keine zweite Fundstelle. Wer einen Begriff
+  // in einem Abschnitt zweimal markiert, bekam vorher »5.3, 5.3« — Zeichen,
+  // die Platz kosten und nichts sagen. Verglichen wird die ANGEZEIGTE Nummer,
+  // denn genau die ist der Sprung, den jemand macht.
+  let distinct-locs(locs) = {
+    let seen = ()
+    let out = ()
+    for l in locs {
+      let d = ref-target(l)
+      let shown = repr(d.body)
+      if shown in seen { continue }
+      seen.push(shown)
+      out.push(l)
+    }
+    out
+  }
+
   // Ein Registereintrag ist eine Zeile, die gegen die nächste stösst. Volle
   // Textkanten sind deshalb Pflicht: Typsts Vorbelegung endet auf der
   // Grundlinie, und die Unterlängen ragten in die Folgezeile.
@@ -83,7 +121,9 @@
 
   for k in keys {
     let entry = grouped.at(k)
-    let letter = upper(k.first())
+    // Symbole tragen keinen Buchstaben, an dem man sie sucht — sie stehen
+    // gemeinsam vor dem Alphabet (siehe `sort-key`).
+    let letter = if k.starts-with(symbol-prefix) { "Symbole" } else { upper(k.first()) }
     if letter != current-letter {
       current-letter = letter
       block(
@@ -100,16 +140,24 @@
       box(width: 1fr, repeat(gap: 0.22em, text(fill: ink-ghost)[.]))
       h(0.35em)
       if entry.see != none {
-        // Ein »siehe«-Eintrag trägt keine eigene Nummer — er schickt weiter.
+        // Ein »siehe«-Eintrag hat keine eigene Nummer — aber die des Ziels.
+        // Ohne sie kostet jede Abkürzung zwei Nachschlagevorgänge statt einem,
+        // und Abkürzungen sind der halbe Zweck des Registers.
         text(style: "italic", fill: ink-faint)[siehe ]
         entry.see
+        let target-key = sort-key(entry.see)
+        let target = grouped.at(target-key, default: none)
+        if target != none and target.see == none {
+          h(0.35em)
+          distinct-locs(target.locs).map(_locator).join([, ])
+        }
       } else {
-        let locs = entry.locs
+        let locs = distinct-locs(entry.locs)
         locs.map(_locator).join([, ])
         // Die Druckseite nur bei genau einer Fundstelle: bei mehreren ist der
         // Abschnitt der schnellere Weg, und zwei Zahlenpaare lesen sich schlecht.
         if c.index-pages and locs.len() == 1 {
-          text(fill: ink-faint, size: c.font-size.note)[ · S.#locs.first().page()]
+          text(fill: ink-faint, size: c.quiet-scale * 1em)[ · S.#locs.first().page()]
         }
       }
     })

@@ -54,6 +54,12 @@
 #let tone-stack = state("zsf-tone", ())
 
 /// Der Ton, in dem gerade gesetzt wird — die umgebende Box oder das Kapitel.
+///
+/// Öffentlich als `tone()`: Eine selbst gezeichnete Skizze braucht Farbe und
+/// hat sonst nur den direkten Griff (`rgb("#…")`), den `02_mandat` verbietet.
+/// `tone().accent` und `tone().frame-hard` geben ihr dieselbe Farbwelt wie
+/// jedem anderen Baustein — in einer Warn-Box also automatisch Rot.
+/// Nur innerhalb von `context`.
 #let active-tone() = {
   let s = tone-stack.get()
   if s.len() > 0 { s.last() } else { chapter-tone() }
@@ -205,7 +211,7 @@
       )))
       if author != "" {
         block(above: c.space.xs, below: 0pt, text(
-          size: c.font-size.note,
+          size: c.font-size.header-note,
           style: "italic",
           fill: ink-on-accent-soft,
         )[von #author])

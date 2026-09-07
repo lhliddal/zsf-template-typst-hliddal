@@ -9,7 +9,9 @@
 = Erstes Kapitel <ch:erstes>
 
 Fliesstext braucht keinen Baustein — ein Absatz ist ein Absatz. Zentrale
-#kw[Fachbegriffe] werden markiert und landen damit automatisch im Register.
+#kw(term: "Fachbegriff")[Fachbegriffe] werden markiert und landen damit
+automatisch im Register — `term` bringt die Lauftext-Form auf die Lemmaform,
+unter der man später sucht.
 
 == Erster Abschnitt <sec:erster>
 

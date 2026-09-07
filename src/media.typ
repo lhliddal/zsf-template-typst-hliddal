@@ -59,6 +59,15 @@
 
 /// Bild links, Text rechts. `frame: "none"` macht daraus die rahmenlose Fassung.
 #let fig-side(picture, body, ..args, ratio: 0.4, height: auto) = context {
+  // Der Sink trägt die Box-Regler; ein drittes positionales Argument fiel
+  // vorher stillschweigend heraus. `fig-side` nimmt genau zwei Teile — für
+  // mehr ist `split` der Baustein.
+  if args.pos().len() > 0 {
+    panic(
+      "fig-side nimmt genau zwei Teile — Bild und Text. Erhalten: "
+        + str(2 + args.pos().len()) + ". Für mehr Blöcke nebeneinander: split().",
+    )
+  }
   let c = conf()
   panel(
     split(

@@ -61,6 +61,10 @@ Kapitelfarben nie hart schreiben; die Töne holen sie sich selbst.
 Nach der Bedeutung wählen, nicht nach dem Aussehen. `kw(index: false)[…]` ist
 der Fachbegriff, der ausnahmsweise nicht ins Register soll.
 
+Die Registerform liest `kw` aus dem Begriff — auch aus einem ausgezeichneten
+(`kw[Satz von *Taylor*]`). Steckt eine Formel darin, ist sie nicht lesbar und
+der Build bricht ab: dann `kw(term: "C¹-Funktion")[$C^1$-Funktion]`.
+
 **Inline-Betonung trägt keine Farbe.** Farbe ist für drei Dinge reserviert:
 Kapitel-Identität auf Flächen, den Wegweiser zum Ziel eines Verweises, und die
 Zuordnung in Formeln.
@@ -91,15 +95,18 @@ bei genau einer Fundstelle zusätzlich auf die Druckseite.
 ```typ
 #kw[Stetigkeit]                         // markiert und indexiert zugleich
 #idx("Lemma von Zorn")                  // unsichtbarer Eintrag
-#idx-see("EW", "Eigenwert")             // »EW, siehe Eigenwert«
-#idx("Zählers", sort: "Zähler")         // abweichender Sortierschlüssel
+#idx-see("EW", "Eigenwert")             // »EW, siehe Eigenwert 5.3«
+#idx("Ω", sort: "Omega")                // anders einsortiert, gleich angezeigt
+#kw(term: "Zähler")[Zählers]            // anders angezeigt: die Lemmaform
 ```
 
 Ausgegeben wird das Register mit `make-index()` unter einem `front`-Kapitel am
 Dokumentende.
 
+Ein `idx-see` trägt die Nummer seines Ziels mit — der Sprung bleibt einer.
 Umlaute brauchen keinen Sortkey: Sortiert wird nach DIN 5007-1 (ä wie a,
-ß wie ss).
+ß wie ss). Begriffe ohne Buchstaben (`Ω`, `∇`) stehen als Gruppe **Symbole**
+vor dem Alphabet. Zweimal derselbe Abschnitt zählt als eine Fundstelle.
 
 **Was hineingehört:** ein Name, den jemand gezielt ansteuert — eine benannte
 Grösse, ein Gesetz, eine Regel, ein Verfahren, ein Objekt. An dem *einen* Ort,

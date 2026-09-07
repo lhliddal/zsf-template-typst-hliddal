@@ -62,6 +62,12 @@ Namen; ein wirkungsloser Regler ist damit ausgeschlossen.
   Dichte mit `leading` und prüft danach das PDF.
 ]
 
+#density-scope(0.85)[
+  #panel[Bereichsweise Dichte][
+    #kw[density-scope] verdichtet ein Kapitel oder einen Anhang punktuell.
+  ]
+]
+
 #warn[
   `leading` enthält die Schrift selbst und verträgt keine grossen Schritte.
   Nach jeder Änderung das PDF auf kollidierende Formelzeilen prüfen.

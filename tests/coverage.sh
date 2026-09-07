@@ -23,9 +23,9 @@ names=$(
 names="$names
 zsf"
 
-# Namen, die kein Kapitel aufruft, sondern die Bibliothek intern braucht.
-# `tone-of` ist öffentlich, wird aber nur von einer Palette-Übersicht gebraucht
-# und nicht von einem Fach-Kapitel — es steht deshalb im Katalog, nicht im Fluss.
+# Namen, die von dieser Prüfung ausgenommen sind. Die Liste ist leer und soll
+# es bleiben: Jeder öffentliche Name wird in `showcase/` oder `template/`
+# vorgeführt — auch `tone-of`, das dort die Palette-Übersicht setzt.
 internal=""
 
 # Wird der Name irgendwo aufgerufen? Zwei Muster statt eines mit »^« in einer
@@ -83,6 +83,20 @@ for k in $knobs; do
     fail=1
   fi
 done
+
+# Die README nennt die Zahl der Stellschrauben. Sie stand sechs zu niedrig, und
+# das fiel nicht auf, weil eine Prosazahl von nichts abgeleitet ist — dieselbe
+# Sorte stiller Drift wie ein Regler, der nirgends beschrieben ist.
+readme_n=$(grep -oE '\*\*Stellschrauben\*\* — [0-9]+ benannte' README.md | grep -oE '[0-9]+')
+actual_n=$(wc -w <<<"$knobs" | tr -d ' ')
+if [ -z "$readme_n" ]; then
+  echo "  README nennt die Zahl der Stellschrauben nicht mehr im erwarteten Satz"
+  echo "      (»**Stellschrauben** — N benannte Argumente«) — Prüfung greift ins Leere"
+  fail=1
+elif [ "$readme_n" != "$actual_n" ]; then
+  echo "  README nennt $readme_n Stellschrauben, config.typ hat $actual_n"
+  fail=1
+fi
 
 # Die Gegenrichtung: eine Regel darf keinen Namen nennen, den es nicht gibt.
 echo "coverage: rules/ gegen die API"

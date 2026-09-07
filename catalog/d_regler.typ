@@ -21,7 +21,7 @@ gleich aussehen, ist einer überflüssig.
 #panel(tone: rgb("#4C248F"))[D-04 · tone: \<Farbe\>][#kurz]
 #zweck("D-04", none)[Ein eigener Ton ist eine Farbe — keine Deklaration mit Rollen.]
 
-== weight, surface, frame, pad <kat:flaechen>
+== surface, frame, pad <kat:flaechen>
 
 #panel(surface: "plain")[D-05 · surface: plain][#kurz]
 #zweck("D-05", none)[Ungetönt — die Basis für Zebra und Gitterlinien.]
@@ -63,6 +63,9 @@ gleich aussehen, ist einer überflüssig.
 #panel(align: center)[D-16 · align: center][#kurz]
 #zweck("D-16", none)[Zentrierter Inhalt.]
 
+#panel(align: right)[D-20 · align: right][#kurz]
+#zweck("D-20", none)[Rechtsbündig — an der Tabelle auch je Spalte: `align: (left, right)`.]
+
 #panel(font: "dense")[D-17 · font: dense][#muster]
 #zweck("D-17", none)[Eine Stufe kleiner, für lange Register.]
 
@@ -71,3 +74,10 @@ gleich aussehen, ist einer überflüssig.
 
 #panel(breakable: true)[D-19 · breakable: true][#kurz]
 #zweck("D-19", none)[Darf über eine Spaltengrenze brechen; sonst sind Boxen atomar.]
+
+== gap <kat:gap>
+
+#panel[D-21 · vor dem Abstand][#kurz]
+#gap("section")
+#panel[D-21 · gap("section")][#kurz]
+#zweck("D-21", none)[Semantischer Thementrenner zwischen Blöcken ohne neuen Balken.]

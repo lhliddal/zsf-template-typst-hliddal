@@ -47,12 +47,21 @@ scan "$CHAPTERS" '#set (page|text|par)\(' \
 scan "$CHAPTERS" '#(pagebreak|colbreak)\(' \
   "roher Umbruch" \
   "newcol() ist der einzige Umbruch im System"
-scan "$CHAPTERS" '#v\([0-9]' \
+scan "$CHAPTERS" '#v\(-?[0-9]' \
   "harter vertikaler Abstand" \
   "Abstand entsteht aus dem Baustein; für einen Blockwechsel gibt es sep()"
-scan "$CHAPTERS" '(text|block|box|rect)\([^)]*(fill|stroke): *(rgb|luma|oklch|color)' \
+# Farbe im Kapitel — dieselbe unbedingte Regel wie unten für src/. Die frühere
+# Fassung verlangte den Farbaufruf UNMITTELBAR hinter `fill:`/`stroke:` und
+# kannte vier Elementnamen. Damit ging beides durch, was man tatsächlich
+# schreibt: `circle(stroke: 1pt + rgb("#215CAF"))` (Rechenausdruck, fremdes
+# Element) und `text(fill: red)` (benannte Farbe). Die Referenz-Implementierung
+# selbst enthielt genau den ersten Fall, ungemeldet.
+scan "$CHAPTERS" '(rgb|luma|cmyk|oklch|oklab|color\.)\(' \
   "direkter Farbgriff" \
-  "Farbe kommt aus dem Ton: tone: auto|neutral|warn|<Farbe>"
+  "Farbe kommt aus dem Ton: tone: auto|neutral|warn|<Farbe>, in einer Zeichnung tone().accent"
+scan "$CHAPTERS" '(fill|stroke): *[^,)]*\b(red|blue|green|yellow|orange|purple|aqua|fuchsia|maroon|navy|olive|silver|teal|black|white|gray|grey|eastern|lime)\b' \
+  "benannte Farbe" \
+  "Farbe kommt aus dem Ton: tone().accent, tone().rule, tone().frame-hard"
 scan "$CHAPTERS" '#text\([^)]*size:' \
   "lokale Schriftgrösse" \
   "font: \"dense\" am Baustein, oder size/prose-scale in zsf(...)"

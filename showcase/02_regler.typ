@@ -14,6 +14,7 @@ Rumpf läuft. Kein Regler verwirft einen anderen.
   Legende, Meta-Anmerkung.
 ]
 #panel(tone: "warn")[tone: "warn"][Der Warn-Ton, ohne die `warn`-Vorbelegung.]
+// lint: erlaubt — genau das ist die API: ein Ton IST eine Farbe.
 #panel(tone: rgb("#8C6239"))[Ein eigener Ton][
   #hl[Ein Ton ist eine Farbe.] Aus ihr werden Titelfläche, laute und ruhige
   Fläche, betonte Fläche und drei Rahmenstärken in OKLCH abgeleitet — deshalb

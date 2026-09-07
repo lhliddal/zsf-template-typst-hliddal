@@ -1,6 +1,6 @@
 # ZSF Template (Typst) — AGENTS.md
 
-> ERZEUGT — rules-hash:87ae6994b60e510c
+> ERZEUGT — rules-hash:cc6eda08cc011f9e
 >
 > Quelle: `rules/*.md`. Nicht direkt bearbeiten.
 > Ändern: `rules/*.md` editieren → `make sync-rules`. Drift: `make check-rules`.
@@ -190,14 +190,6 @@ den Stellschrauben gerechnet. Ein hartes `pt`/`mm`-Mass in einem anderen Modul
 meldet `make lint` — relative Masse (`em`, `%`, `fr`) sind erlaubt, weil sie
 mitskalieren.
 
-## Warum es wenig zu prüfen gibt
-
-Der Vorgänger brauchte 4158 Zeilen Verifier, weil LaTeX Fehler stillschweigend
-annahm: ein unbekannter Schlüssel, ein Regler, der einen anderen verwirft, ein
-Mass, das niemand liest. Typst bricht bei all dem selbst ab. Was bleibt, prüft
-etwas, das eine Sprache nicht sehen kann — Wirkung, Vollständigkeit, Grenze
-zwischen Inhalt und Gestaltung (`60_workflow`).
-
 ## Beim Editieren von `src/`
 
 - Neue Gestaltungsmasse nach `config.typ`, nicht daneben.
@@ -230,8 +222,8 @@ prüft zusätzlich jede Schraube am gerenderten Satz auf Wirkung.
 | Name | Vorbelegung | Wirkung |
 |---|---|---|
 | `title` | `"Zusammenfassung"` | Dokumentkopf und PDF-Titel |
-| `author` | `""` | Kopfzeile rechts und PDF-Autor |
-| `subject` | `""` | Fusszeile links und PDF-Keywords |
+| `author` | `""` | Zeile unter dem Titel im Dokumentkopf, und PDF-Autor |
+| `subject` | `""` | nur PDF-Keywords — auf der Seite unsichtbar |
 | `release`, `build` | aus `sys.inputs` | Kennungen; das Makefile setzt sie |
 
 ## Grösse und Dichte
@@ -263,6 +255,10 @@ Skalierung, die Zeilenhöhe enthält die Schrift selbst.
 
 Die Bereichsfaktoren multiplizieren den globalen Faktor für **ihren** Bereich —
 für ZSF, die ungleich verteilt sind.
+
+Für ein einzelnes Kapitel oder einen Anhang gibt es `density-scope(0.85)[…]`:
+Es skaliert die Dichte lokal und erlaubt mit `breakable: true`, alle enthaltenen
+Boxen durchlaufen zu lassen.
 
 ## Seite und Schrift
 
@@ -326,6 +322,7 @@ Build.
 | Herleitung, Fallunterscheidung | `steps[Titel][…]` mit `case` |
 | Code-Schnipsel | ``code[```python …``` ]`` — die Sprache steht am Codeblock |
 | Zwei Blöcke nebeneinander | `split(links, rechts, ratio: 0.4)` |
+| Vertikaler Blockabstand | `gap()` (`"xs"`, `"s"`, `"m"`, `"l"`, `"section"`) |
 | Reiner Fliesstext | ein Absatz — kein Baustein nötig |
 
 `warn`, `formula`, `picture`, `steps` und `code` sind **Vorbelegungen von
@@ -343,7 +340,7 @@ Alle gelten auf jeder Box, sofern sie die Eigenschaft hat.
 | `pad` | `"normal"`, `"tight"`, `"none"`, `"bar"` | Innenabstand |
 | `frame` | `"soft"`, `"strong"`, `"hard"`, `"none"` | Rahmenstärke |
 | `surface` | `auto`, `"plain"`, `"quiet"`, `"emphasis"` | Flächen-Rolle |
-| `align` | `left`, `center` | Justierung des Inhalts |
+| `align` | `left`, `center`, `right` | Justierung des Inhalts |
 | `font` | `"normal"`, `"dense"` | Schriftgrösse des Inhalts |
 | `tag` | Inhalt | Meta-Tag rechts im Titel |
 | `breakable` | `false`, `true` | darf über die Spaltengrenze brechen |
@@ -386,6 +383,10 @@ Inhaltsfrage, nicht auf »welche Box nehme ich«.
   `#text(size: …)`. Für eine ganze `cetz`-Zeichnung einmal als deren
   `font`-Option setzen. Für echte Diagramme und Plots ist `cetz` zuständig und
   nicht dieses Template.
+- **Farbe in Zeichnungen:** `tone()` gibt innerhalb von `context` die Farbwelt,
+  in der die Zeichnung steht — `tone().accent`, `tone().rule`,
+  `tone().frame-hard`. In einer Warn-Box ist die Skizze damit rot, ohne dass im
+  Kapitel etwas steht. Ein `rgb(…)` im Kapitel meldet `make lint`.
 - **Nebeneinander:** `split` ist ein eigener Baustein und kein Box-Regler —
   zwei Dinge nebeneinander ist eine Layout-Frage. Dadurch komponiert es in
   jeder Box.
@@ -395,6 +396,13 @@ Inhaltsfrage, nicht auf »welche Box nehme ich«.
 - **Umbruch:** Boxen sind atomar. `breakable: true` pro Box, wenn ein langes
   Register absichtlich durchlaufen soll. Titelbalken kleben von selbst an ihrem
   Inhalt; es gibt keine Reserven und keinen Pack-Modus mehr.
+- **Vertikaler Abstand:** `gap()` setzt einen semantischen Abstand zwischen
+  Blöcken (Vorbelegung `"m"`). Für einen Themenwechsel innerhalb einer Spalte
+  ohne neuen Balken: `gap("section")`. Kollabiert dank `weak: true` sauber mit
+  benachbarten Box-Rändern.
+- **Bereichsweise Dichte:** `density-scope(0.85)[…]` verdichtet ein Kapitel oder
+  einen Anhang punktuell; mit `breakable: true` werden alle enthaltenen Boxen
+  durchlaufend.
 
 ### `30_struktur.md`
 
@@ -455,6 +463,10 @@ Kapitelfarben nie hart schreiben; die Töne holen sie sich selbst.
 Nach der Bedeutung wählen, nicht nach dem Aussehen. `kw(index: false)[…]` ist
 der Fachbegriff, der ausnahmsweise nicht ins Register soll.
 
+Die Registerform liest `kw` aus dem Begriff — auch aus einem ausgezeichneten
+(`kw[Satz von *Taylor*]`). Steckt eine Formel darin, ist sie nicht lesbar und
+der Build bricht ab: dann `kw(term: "C¹-Funktion")[$C^1$-Funktion]`.
+
 **Inline-Betonung trägt keine Farbe.** Farbe ist für drei Dinge reserviert:
 Kapitel-Identität auf Flächen, den Wegweiser zum Ziel eines Verweises, und die
 Zuordnung in Formeln.
@@ -485,15 +497,18 @@ bei genau einer Fundstelle zusätzlich auf die Druckseite.
 ```typ
 #kw[Stetigkeit]                         // markiert und indexiert zugleich
 #idx("Lemma von Zorn")                  // unsichtbarer Eintrag
-#idx-see("EW", "Eigenwert")             // »EW, siehe Eigenwert«
-#idx("Zählers", sort: "Zähler")         // abweichender Sortierschlüssel
+#idx-see("EW", "Eigenwert")             // »EW, siehe Eigenwert 5.3«
+#idx("Ω", sort: "Omega")                // anders einsortiert, gleich angezeigt
+#kw(term: "Zähler")[Zählers]            // anders angezeigt: die Lemmaform
 ```
 
 Ausgegeben wird das Register mit `make-index()` unter einem `front`-Kapitel am
 Dokumentende.
 
+Ein `idx-see` trägt die Nummer seines Ziels mit — der Sprung bleibt einer.
 Umlaute brauchen keinen Sortkey: Sortiert wird nach DIN 5007-1 (ä wie a,
-ß wie ss).
+ß wie ss). Begriffe ohne Buchstaben (`Ω`, `∇`) stehen als Gruppe **Symbole**
+vor dem Alphabet. Zweimal derselbe Abschnitt zählt als eine Fundstelle.
 
 **Was hineingehört:** ein Name, den jemand gezielt ansteuert — eine benannte
 Grösse, ein Gesetz, eine Regel, ein Verfahren, ein Objekt. An dem *einen* Ort,
@@ -526,8 +541,14 @@ nicht möglich; im Vorgänger führte genau das zu weisser Schrift auf weissem
 Grund, ohne Fehlermeldung. Ein Zellverbund in der Kopfzeile wird in Spalten
 gezählt, nicht in Argumenten.
 
-Die Spaltengewichte werden nicht geprüft, weil es nichts zu prüfen gibt:
-`cols: (1, 2.4)` sind Anteile, keine Summe, die aufgehen muss.
+Die Spaltengewichte sind Anteile und müssen zu nichts aufgehen; ein Gewicht
+von null oder weniger bricht ab, weil zwei Zellen sonst übereinander drucken.
+
+**Die Zellzahl muss aufgehen.** Fehlt eine Zelle, verrutscht ab dort jede Zeile
+um eins — im Satz sieht das aus wie Absicht. Deshalb bricht der Build, wenn die
+Zellen kein volles Vielfaches der Spaltenzahl füllen oder die Kopfzeile nicht
+über alle Spalten reicht. Verbünde zählen mit ihrer `colspan`; bei `rowspan`
+oder ausdrücklich platzierten Zellen wird nicht gerechnet statt falsch gemeldet.
 
 ## Regler
 
@@ -539,6 +560,7 @@ Die Spaltengewichte werden nicht geprüft, weil es nichts zu prüfen gibt:
 | `rows` | `"normal"`, `"roomy"`, `"tight"` | Zeilenhöhe |
 | `colsep` | `"normal"`, `"tight"` | Zellpolsterung |
 | `font` | `"normal"`, `"dense"` | Schriftgrösse |
+| `align` | `left`, `center`, `right` | eine für alle — oder `(left, right)`, eine je Spalte |
 
 Dazu gelten die Box-Regler (`tone`, `frame`, `breakable`, …), sobald `title`
 gesetzt ist.
@@ -599,9 +621,10 @@ Zur blossen Betonung sind sie falsch — dafür gibt es `danger` und `hl`.
 
 **Über das ganze Dokument:** Grössenfarben. Eine Farbe gehört im ganzen
 Dokument *einer* Grösse — vergeben in `zsf(quantities: ("Kraft": 0, …))`, nie
-im Kapitel. Danach `$#quantity("Kraft", $F$) = m dot a$`. Ein nicht vergebener
-Name bricht den Build. Wo ein Fach keine wiederkehrenden Grössen hat, bleibt
-der Eintrag leer.
+im Kapitel. Danach `$#quantity("Kraft", $F$) = m dot a$`. **Acht Slots (0–7),
+und jeder nur einmal**; ein doppelt oder ausserhalb vergebener Slot bricht den
+Build, ebenso ein nicht vergebener Name im Kapitel. Wo ein Fach keine
+wiederkehrenden Grössen hat, bleibt der Eintrag leer.
 
 Die Namen sind in Grossbuchstaben (`markA` statt `mark-a`), weil ein
 Bindestrich im Mathe-Modus ein Minuszeichen ist.

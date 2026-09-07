@@ -14,7 +14,7 @@ benachbarte Kapitel unterscheidbar bleiben und jede Stufe ihre Rolle behält.
   let t = tone-of(accent)
   block(breakable: false, above: 6pt, below: 6pt, {
     block(width: 100%, fill: t.accent, radius: 2pt, inset: (x: 4pt, y: 2pt),
-      text(fill: white, weight: "bold")[Slot #nr])
+      text(fill: t.bar-text, weight: "bold")[Slot #nr])
     block(width: 100%, fill: t.bar, radius: 2pt, inset: (x: 4pt, y: 1.5pt), above: 2pt,
       text(fill: t.bar-text, weight: "bold", size: 0.94em)[Abschnittston])
     block(width: 100%, fill: t.bar-light, radius: 2pt, inset: (x: 4pt, y: 1.5pt), above: 2pt,

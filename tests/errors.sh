@@ -64,6 +64,29 @@ expect "Wert von align" "Regler »align«" '#panel(align: "mitte")[T][x]'
 expect "Wert von grid" "Regler »grid«" '#tabular(cols: (1,), grid: "hoizontal", [a])'
 expect "Wert von rows" "Regler »rows«" '#tabular(cols: (1,), rows: "romy", [a])'
 expect "Wert von colsep" "Regler »colsep«" '#tabular(cols: (1,), colsep: "tigt", [a])'
+expect "Wert von gap" "Regler »gap«" '#gap("tigt")'
+expect "Dichte von density-scope" "density-scope" '#density-scope(-1)[x]'
+expect "breakable von density-scope" "density-scope" '#density-scope(breakable: "ja")[x]'
+
+# Der zweite stille Fehlschlag neben dem Sink: eine Eingabe, die durchläuft und
+# dabei etwas WEGLÄSST. Das Register hing daran gleich dreifach.
+expect "Begriff, den das Register nicht lesen kann" "nicht als Text" '#kw[$C^1$-Funktion]'
+expect "Registereintrag ohne Begriff" "ohne Begriff" '#idx("")'
+expect "siehe-Verweis ins Leere" "ohne Begriff" '#idx-see("EW", "")'
+expect "drittes Argument an fig-side" "genau zwei Teile" '#fig-side(rect(), [a], [b])'
+expect "Ausrichtung je Spalte, falsche Anzahl" "Regler »align«" \
+  '#tabular(cols: (1, 1, 1), align: (left, right), [A], [B], [C])'
+expect "Ausrichtung, die keine ist" "Regler »align«" \
+  '#tabular(cols: (1,), align: ("rechts",), [A])'
+
+# Entartete Geometrie: kompiliert, sieht aber falsch aus. Ohne Spalten fällt
+# alles in eine, mit Gewicht 0 drucken zwei Zellen übereinander, und ein
+# `ratio` ausserhalb (0,1) gibt einer Hälfte negative Breite.
+expect "Tabelle ohne Spalten" "mindestens eine Spalte" '#tabular(cols: (), [a], [b])'
+expect "Spaltengewicht null" "grösser null" '#tabular(cols: (0, 1), [a], [b])'
+expect "negatives Spaltengewicht" "grösser null" '#tabular(cols: (1, -2), [a], [b])'
+expect "split ausserhalb von 0..1" "echt zwischen" '#split([a], [b], ratio: 1.4)'
+expect "split mit ratio 0" "echt zwischen" '#split([a], [b], ratio: 0)'
 
 # Die Stellschrauben werden am selben Muster geprüft, aber am Dokumentkopf.
 # Ausgabe erst einfangen, dann durchsuchen: In einer Pipe würde `pipefail` am
@@ -76,6 +99,35 @@ expect "Wert von colsep" "Regler »colsep«" '#tabular(cols: (1,), colsep: "tigt
 knob_out=$(typst compile tests/out/e.typ tests/out/e.pdf --root . 2>&1)
 if ! grep -qF "Unbekannte Stellschraube" <<<"$knob_out"; then
   echo "  Stellschraube mit Tippfehler — keine verständliche Meldung"
+  fail=1
+fi
+
+# Grössenfarben: Zwei Namen auf demselben Slot bekamen still dieselbe Farbe,
+# und ein Slot ausserhalb der Liste rutschte per `calc.rem` auf einen fremden.
+# Damit sagte die Farbe nichts mehr — der einzige Zweck des Reglers.
+for q in 'quantities: ("Kraft": 0, "Moment": 0)' 'quantities: ("Weg": 8)' 'quantities: ("Weg": -1)'; do
+  {
+    echo '#import "@local/zsf:0.1.0": *'
+    echo "#show: zsf.with($q)"
+    echo '= K'
+  } >tests/out/e.typ
+  q_out=$(typst compile tests/out/e.typ tests/out/e.pdf --root . 2>&1)
+  if ! grep -qF "Grösse »" <<<"$q_out"; then
+    echo "  $q — keine verständliche Meldung"
+    fail=1
+  fi
+done
+
+# Eine Palette mit einer Farbe teilte in der Farbrotation durch null — ein roher
+# Compiler-Fehler mitten in src/, statt einer Meldung mit dem Namen der Schraube.
+{
+  echo '#import "@local/zsf:0.1.0": *'
+  echo '#show: zsf.with(palette: (rgb("#333333"),))'
+  echo '= K'
+} >tests/out/e.typ
+pal_out=$(typst compile tests/out/e.typ tests/out/e.pdf --root . 2>&1)
+if ! grep -qF "Stellschraube »palette«" <<<"$pal_out"; then
+  echo "  Palette mit einer Farbe — keine verständliche Meldung"
   fail=1
 fi
 
@@ -92,7 +144,15 @@ fi
   echo '#fig(rect(), cap: [C], tone: "neutral")'
   echo '#fig-side(rect(), [t], ratio: 0.3, frame: "none")'
   echo '#tabular(cols: (1, 2), [A], table.cell(colspan: 1)[B], [1], [2])'
+  echo '#tabular(cols: (1, 1, 1), table.cell(colspan: 3)[Gruppe], [1], [2], [3])'
+  echo '#tabular(cols: (1, 1), [K], [W], table.cell(rowspan: 2)[hoch], [1], [2])'
+  echo '#tabular(cols: (1, 1), header: false, [a], [b], [c], [d])'
   echo '#xref(<k>)'
+  echo '#tabular(cols: (1, 1), align: (left, right), [A], [B], [x], [1])'
+  echo '#kw(term: "C¹-Funktion")[$C^1$-Funktion] #kw[Satz von *Taylor*]'
+  echo '#idx("Ω") #idx-see("Ω", "Ohm")'
+  echo '#context [#tone().accent]'
+  echo '#make-index()'
 } >tests/out/e.typ
 if ! typst compile tests/out/e.typ tests/out/e.pdf --root . >/dev/null 2>&1; then
   echo "  Gegenprobe gescheitert — korrekte Eingabe baut nicht"

@@ -51,6 +51,19 @@
 #zweck("G-08", ("palette", "tone-of"))[Die Kapitelfarben und die daraus
 abgeleiteten Rollen. Vollständig in der Referenz unter »Palette«.]
 
+#eintrag[G-09][tone][
+  #context {
+    let t = tone()
+    grid(columns: 3, gutter: 3pt,
+      circle(radius: 7pt, stroke: 1pt + t.accent),
+      circle(radius: 7pt, stroke: 1pt + t.frame-hard),
+      circle(radius: 7pt, fill: t.zebra, stroke: 1pt + t.frame-soft))
+  }
+]
+#zweck("G-09", "tone")[Der Ton, in dem gerade gesetzt wird. Damit eine selbst
+gezeichnete Skizze Farbe hat, ohne den direkten Griff — in einer Warn-Box
+faellt sie rot aus, ohne dass im Kapitel etwas steht.]
+
 #steps[G-07 · given · step · target][
   #given[Voraussetzung] #sym.arrow.r #step[Schritt] #sym.arrow.r #target[Ziel]
 ]

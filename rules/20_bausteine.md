@@ -33,6 +33,7 @@ Build.
 | Herleitung, Fallunterscheidung | `steps[Titel][…]` mit `case` |
 | Code-Schnipsel | ``code[```python …``` ]`` — die Sprache steht am Codeblock |
 | Zwei Blöcke nebeneinander | `split(links, rechts, ratio: 0.4)` |
+| Vertikaler Blockabstand | `gap()` (`"xs"`, `"s"`, `"m"`, `"l"`, `"section"`) |
 | Reiner Fliesstext | ein Absatz — kein Baustein nötig |
 
 `warn`, `formula`, `picture`, `steps` und `code` sind **Vorbelegungen von
@@ -50,7 +51,7 @@ Alle gelten auf jeder Box, sofern sie die Eigenschaft hat.
 | `pad` | `"normal"`, `"tight"`, `"none"`, `"bar"` | Innenabstand |
 | `frame` | `"soft"`, `"strong"`, `"hard"`, `"none"` | Rahmenstärke |
 | `surface` | `auto`, `"plain"`, `"quiet"`, `"emphasis"` | Flächen-Rolle |
-| `align` | `left`, `center` | Justierung des Inhalts |
+| `align` | `left`, `center`, `right` | Justierung des Inhalts |
 | `font` | `"normal"`, `"dense"` | Schriftgrösse des Inhalts |
 | `tag` | Inhalt | Meta-Tag rechts im Titel |
 | `breakable` | `false`, `true` | darf über die Spaltengrenze brechen |
@@ -93,6 +94,10 @@ Inhaltsfrage, nicht auf »welche Box nehme ich«.
   `#text(size: …)`. Für eine ganze `cetz`-Zeichnung einmal als deren
   `font`-Option setzen. Für echte Diagramme und Plots ist `cetz` zuständig und
   nicht dieses Template.
+- **Farbe in Zeichnungen:** `tone()` gibt innerhalb von `context` die Farbwelt,
+  in der die Zeichnung steht — `tone().accent`, `tone().rule`,
+  `tone().frame-hard`. In einer Warn-Box ist die Skizze damit rot, ohne dass im
+  Kapitel etwas steht. Ein `rgb(…)` im Kapitel meldet `make lint`.
 - **Nebeneinander:** `split` ist ein eigener Baustein und kein Box-Regler —
   zwei Dinge nebeneinander ist eine Layout-Frage. Dadurch komponiert es in
   jeder Box.
@@ -102,3 +107,10 @@ Inhaltsfrage, nicht auf »welche Box nehme ich«.
 - **Umbruch:** Boxen sind atomar. `breakable: true` pro Box, wenn ein langes
   Register absichtlich durchlaufen soll. Titelbalken kleben von selbst an ihrem
   Inhalt; es gibt keine Reserven und keinen Pack-Modus mehr.
+- **Vertikaler Abstand:** `gap()` setzt einen semantischen Abstand zwischen
+  Blöcken (Vorbelegung `"m"`). Für einen Themenwechsel innerhalb einer Spalte
+  ohne neuen Balken: `gap("section")`. Kollabiert dank `weak: true` sauber mit
+  benachbarten Box-Rändern.
+- **Bereichsweise Dichte:** `density-scope(0.85)[…]` verdichtet ein Kapitel oder
+  einen Anhang punktuell; mit `breakable: true` werden alle enthaltenen Boxen
+  durchlaufend.

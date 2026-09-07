@@ -29,9 +29,9 @@ Eine Box und fünf Vorbelegungen. Jeder Eintrag zeigt denselben Mustertext.
 #zweck("C-06", "formula")[Formelblock: betont geflächt, zentriert, harte Kontur.]
 
 #picture[C-07 · picture][
-  #box(width: 100%, height: 1.1cm)[#place(center + horizon, circle(
+  #context box(width: 100%, height: 1.1cm)[#place(center + horizon, circle(
     radius: 12pt,
-    stroke: 1pt + rgb("#215CAF"),
+    stroke: 1pt + tone().accent,
   ))]
 ]
 #zweck("C-07", "picture")[Container für eine selbstgezeichnete Abbildung.]

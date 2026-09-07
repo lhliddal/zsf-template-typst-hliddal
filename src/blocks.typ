@@ -93,10 +93,13 @@
   align: left,
   font: "normal",
   tag: none,
-  breakable: false,
+  breakable: auto,
 ) = context {
   reject-unknown("dieser Box", args.named(), _knobs)
   let c = conf()
+  let is-breakable = if breakable == auto { c.at("breakable", default: false) } else if type(breakable) == bool { breakable } else {
+    panic("Regler »breakable«: erwartet true, false oder auto — nicht " + repr(breakable))
+  }
   let t = resolve-tone(tone)
   let (title, body) = _title-body(args)
 
@@ -170,7 +173,7 @@
   )
 
   let shell = block(
-    breakable: breakable,
+    breakable: is-breakable,
     width: 100%,
     above: c.space.s,
     below: c.space.s,
@@ -269,11 +272,41 @@
 /// Satz, der an die VORHERGEHENDE Box gehört.
 #let after(body) = context block(above: conf().space.xs, below: conf().space.s, body)
 
+/// Semantischer vertikaler Abstand zwischen Blöcken im Kapitel.
+///
+/// Kollabiert dank `weak: true` sauber mit den umgebenden Kastenabständen.
+///
+/// - `step`: `"xs"` · `"s"` · `"m"` (Vorbelegung) · `"l"` · `"section"` (Thementrenner)
+#let gap(..args) = context {
+  let named = args.named()
+  reject-unknown("dieses Abstands", named, ("step",))
+  let pos = args.pos()
+  let step = if pos.len() > 0 { pos.first() } else { named.at("step", default: "m") }
+  let c = conf()
+  let d = pick("gap", step, (
+    "xs": c.space.xs,
+    "s": c.space.s,
+    "m": c.space.m,
+    "l": c.space.l,
+    "section": c.space.l,
+  ))
+  v(d, weak: true)
+}
+
 // ── Zwei Blöcke nebeneinander ────────────────────────────────
 // Eigener Baustein statt eines Box-Reglers: »zwei Dinge nebeneinander« ist
 // eine Layout-Frage und keine Eigenschaft der Box. Dadurch komponiert es in
 // jeder Box, statt dass jede Box den Regler mitschleppt.
 #let split(left, right, ratio: 0.5, align: top) = context {
+  // Ausserhalb von (0, 1) bekommt eine Hälfte eine negative oder gar keine
+  // Breite — die Blöcke drucken dann übereinander oder laufen aus der Spalte,
+  // beides ohne Meldung.
+  if type(ratio) not in (int, float) or ratio <= 0 or ratio >= 1 {
+    panic(
+      "split: »ratio« ist der Anteil der linken Hälfte und liegt echt zwischen "
+        + "0 und 1 — nicht " + repr(ratio),
+    )
+  }
   let c = conf()
   grid(
     columns: (ratio * 1fr, (1.0 - ratio) * 1fr),

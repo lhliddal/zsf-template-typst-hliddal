@@ -17,9 +17,10 @@ Text herum und sind an jeder Kapitelgrenze dieses Dokuments zu sehen.
 ]
 #zweck("B-01", none)[Gliederung, die von selbst nummeriert, verlinkt und ins Register zeigt.]
 
-#eintrag[B-02][`front(titel, short:)`][
+#eintrag[B-02][`front(titel, short:, anchor:)`][
   Unnummeriertes Kapitel, trägt Slot 0. `short` ist der Wegweiser, der im
-  Register an Stelle einer Abschnittsnummer erscheint.
+  Register an Stelle einer Abschnittsnummer erscheint; `anchor: <ze>` macht das
+  Kapitel verweisbar — ein Label daneben zeigte auf das vorhergehende.
 ]
 #zweck("B-02", "front")[Front-Matter und das Register selbst.]
 

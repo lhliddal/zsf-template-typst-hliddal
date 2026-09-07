@@ -154,9 +154,17 @@ nicht veralten — im Vorgänger war sie von Hand nachgeführt.
 == Bilanz <kat:bilanz>
 
 #context {
-  let zeilen = read("/lib.typ").split("\n").len()
+  // Zeilen wie `wc -l` zählen, sonst ist der Vergleich mit den 5560 des
+  // Vorgängers keiner: `split("\n")` liefert hinter dem abschliessenden
+  // Zeilenumbruch ein leeres Stück und zählte jede Datei um eins zu hoch.
+  let zeilen-in(pfad) = {
+    let t = read(pfad)
+    let n = t.split("\n").len()
+    if t.ends-with("\n") { n - 1 } else { n }
+  }
+  let zeilen = zeilen-in("/lib.typ")
   for m in ("config", "knobs", "readability", "palette", "structure", "blocks", "tables", "media", "markup", "maths", "index") {
-    zeilen += read("/src/" + m + ".typ").split("\n").len()
+    zeilen += zeilen-in("/src/" + m + ".typ")
   }
   panel[H-05 · Was die Zahlen sagen][
     #exporte.len() öffentliche Namen, #schrauben.len() Stellschrauben,

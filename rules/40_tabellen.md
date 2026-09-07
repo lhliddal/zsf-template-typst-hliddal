@@ -20,8 +20,14 @@ nicht möglich; im Vorgänger führte genau das zu weisser Schrift auf weissem
 Grund, ohne Fehlermeldung. Ein Zellverbund in der Kopfzeile wird in Spalten
 gezählt, nicht in Argumenten.
 
-Die Spaltengewichte werden nicht geprüft, weil es nichts zu prüfen gibt:
-`cols: (1, 2.4)` sind Anteile, keine Summe, die aufgehen muss.
+Die Spaltengewichte sind Anteile und müssen zu nichts aufgehen; ein Gewicht
+von null oder weniger bricht ab, weil zwei Zellen sonst übereinander drucken.
+
+**Die Zellzahl muss aufgehen.** Fehlt eine Zelle, verrutscht ab dort jede Zeile
+um eins — im Satz sieht das aus wie Absicht. Deshalb bricht der Build, wenn die
+Zellen kein volles Vielfaches der Spaltenzahl füllen oder die Kopfzeile nicht
+über alle Spalten reicht. Verbünde zählen mit ihrer `colspan`; bei `rowspan`
+oder ausdrücklich platzierten Zellen wird nicht gerechnet statt falsch gemeldet.
 
 ## Regler
 
@@ -33,6 +39,7 @@ Die Spaltengewichte werden nicht geprüft, weil es nichts zu prüfen gibt:
 | `rows` | `"normal"`, `"roomy"`, `"tight"` | Zeilenhöhe |
 | `colsep` | `"normal"`, `"tight"` | Zellpolsterung |
 | `font` | `"normal"`, `"dense"` | Schriftgrösse |
+| `align` | `left`, `center`, `right` | eine für alle — oder `(left, right)`, eine je Spalte |
 
 Dazu gelten die Box-Regler (`tone`, `frame`, `breakable`, …), sobald `title`
 gesetzt ist.

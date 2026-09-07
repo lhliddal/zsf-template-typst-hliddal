@@ -20,6 +20,8 @@
 /// - `zebra`, `grid`: `"both"` · `"horizontal"` · `"none"`
 /// - `rows`: `"normal"` · `"roomy"` (Brüche, Wurzeln) · `"tight"` (Kurzregister)
 /// - `colsep`: `"normal"` · `"tight"` (vielspaltige Register)
+/// - `align`: eine Ausrichtung für alle Spalten — oder eine je Spalte,
+///   `align: (left, right)` für die Zahlenspalte rechtsbündig
 #let tabular(
   ..cells,
   title: none,
@@ -46,8 +48,42 @@
   let t = resolve-tone(tone)
   let n = cols.len()
 
+  // Eine Spaltenliste, die nicht aufgeht, zerstört die Tabelle lautlos: Bei
+  // `cols: ()` fällt alles in eine Spalte, bei einem Gewicht 0 drucken zwei
+  // Zellen übereinander (»Wpfrt«). Beides kompiliert ohne ein Wort.
+  if cols.len() == 0 {
+    panic("Regler »cols«: eine Tabelle braucht mindestens eine Spalte.")
+  }
+  for w in cols {
+    let bad = if type(w) in (int, float) { w <= 0 } else if type(w) == length { w <= 0pt } else { false }
+    if bad {
+      panic("Regler »cols«: jede Spalte braucht ein Gewicht grösser null — erhalten: " + repr(cols))
+    }
+  }
+
+  // Eine Ausrichtung für alle Spalten — oder eine je Spalte. Ohne die zweite
+  // Form gäbe es für die rechtsbündige Zahlenspalte nur `table.cell(align:)`
+  // an JEDER Zelle, und ein `align: (left, right)` scheiterte mit einer rohen
+  // Compiler-Meldung (»cannot add array and alignment«) statt mit einer, die
+  // den Regler nennt.
+  let check-align(a) = {
+    if type(a) != alignment {
+      panic("Regler »align«: erwartet eine Ausrichtung (left, center, right) — nicht " + repr(a))
+    }
+    a + horizon
+  }
+  let cell-align = if type(align) == array {
+    if align.len() != cols.len() {
+      panic(
+        "Regler »align«: " + str(align.len()) + " Ausrichtungen für "
+          + str(cols.len()) + " Spalten. Eine je Spalte — oder eine für alle.",
+      )
+    }
+    align.map(check-align)
+  } else { check-align(align) }
+
   let columns = cols.map(w => if type(w) in (int, float) { w * 1fr } else { w })
-  let pad-x = pick("colsep", colsep, ("normal": c.cell.x, "tight": c.cell.y))
+  let pad-x = pick("colsep", colsep, ("normal": c.cell.x, "tight": c.cell.x-tight))
   let pad-y = pick("rows", rows, (
     "normal": c.cell.y,
     "roomy": c.cell.y-roomy,
@@ -62,16 +98,48 @@
   // aber zwei Spalten. Wer das nicht mitzählt, verschiebt die ganze Tabelle
   // um eine Zelle, und zwar ohne Fehlermeldung.
   let all = cells.pos()
+  let field-of(cell, name) = if type(cell) == content and cell.func() == table.cell {
+    cell.fields().at(name, default: 1)
+  } else { 1 }
+  // Linien sind Anweisungen, keine Zellen — sie zählen bei der Aufteilung nicht mit.
+  let is-line(cell) = type(cell) == content and cell.func() in (table.hline, table.vline)
+
   let split-at = 0
   if header {
     let used = 0
     while used < n and split-at < all.len() {
-      let cell = all.at(split-at)
-      let span = if type(cell) == content and cell.func() == table.cell {
-        cell.fields().at("colspan", default: 1)
-      } else { 1 }
-      used += span
+      if not is-line(all.at(split-at)) { used += field-of(all.at(split-at), "colspan") }
       split-at += 1
+    }
+    // Eine Kopfzeile, die nicht über alle Spalten reicht, ist immer ein
+    // Versehen — und eines, das man im Satz nicht sieht: Die Tabelle steht
+    // dann einfach mit einer halben Kopfzeile da.
+    if used < n {
+      panic(
+        "Kopfzeile deckt " + str(used) + " von " + str(n) + " Spalten ab. "
+          + "Die ersten Zellen SIND die Kopfzeile — eine je Spalte.",
+      )
+    }
+  }
+
+  // Und die Gegenprobe über die ganze Tabelle: Fehlt irgendwo eine Zelle,
+  // rutscht ab dort jede Zeile um eins, und zwar ohne ein Wort. In einer ZSF,
+  // die in der Prüfung gelesen wird, ist das kein Schönheitsfehler.
+  // Bei einem `rowspan` stimmt die einfache Rechnung nicht mehr — dann wird
+  // nicht geprüft, statt falsch zu melden.
+  let payload = all.filter(c => not is-line(c))
+  let placed(c) = type(c) == content and c.func() == table.cell and (
+    "x" in c.fields() or "y" in c.fields()
+  )
+  let unzaehlbar = payload.any(c => field-of(c, "rowspan") > 1 or placed(c))
+  if not unzaehlbar {
+    let covered = payload.fold(0, (acc, c) => acc + field-of(c, "colspan"))
+    if calc.rem(covered, n) != 0 {
+      panic(
+        "Die Zellen füllen " + str(covered) + " Felder, die Tabelle hat " + str(n)
+          + " Spalten — die letzte Zeile bleibt unvollständig und alles ab der "
+          + "fehlenden Zelle verrutscht.",
+      )
     }
   }
   let head-cells = all.slice(0, split-at)
@@ -80,7 +148,7 @@
   let table-content = table(
     columns: columns,
     inset: (x: pad-x, y: pad-y),
-    align: align + horizon,
+    align: cell-align,
     // Die Aussenkante zeichnet der Rahmen der Box — eine Tabellenlinie ist
     // gerade und endete an den runden Ecken im Nichts.
     stroke: (x, y) => (

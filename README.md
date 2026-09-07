@@ -51,8 +51,8 @@ folglich nicht eigenständig — er braucht dieses Repository am Platz.
 = Ableitungen <ch:ableitungen>
 == Rechenregeln <sec:regeln>
 
-Fliesstext braucht keinen Baustein. Zentrale #kw[Fachbegriffe] werden markiert
-und landen damit automatisch im Register.
+Fliesstext braucht keinen Baustein. Zentrale #kw(term: "Fachbegriff")[Fachbegriffe]
+werden markiert und landen damit automatisch im Register.
 
 #formula(weight: "caption")[Kettenregel][
   $ dif / (dif x) f(g(x)) = f'(g(x)) dot g'(x) $
@@ -78,9 +78,13 @@ und landen damit automatisch im Register.
 `frame`, `surface`, `align`, `font`, `tag`, `breakable`.
 
 **Marker** — `kw`, `lbl`, `danger`, `concl`, `hl`, `xref`, `sec-ref`,
-`markA`–`markD`, `quantity`.
+`script-ref`, `diagram-label`, `markA`–`markD`, `quantity`.
 
-**Stellschrauben** — 24 benannte Argumente von `zsf(...)`, von `size` und
+**Register und Gliederung** — `front`, `newcol`, `idx`, `idx-see`,
+`make-index`; `tone()` gibt einer selbst gezeichneten Skizze die Farbwelt, in
+der sie steht.
+
+**Stellschrauben** — 30 benannte Argumente von `zsf(...)`, von `size` und
 `density` bis `palette` und `columns`. Ein Tippfehler bricht den Build.
 
 Vollständig gesetzt in der Referenz (`make build`), nebeneinander im Katalog
@@ -89,7 +93,7 @@ Vollständig gesetzt in der Referenz (`make build`), nebeneinander im Katalog
 ## Prüfen
 
 ```bash
-make check       # alles, in ~3 Sekunden
+make check       # alles, in wenigen Sekunden
 ```
 
 | Stufe | Frage |
@@ -100,7 +104,8 @@ make check       # alles, in ~3 Sekunden
 | `knobs` | Hat **jede** Stellschraube eine messbare Wirkung? |
 | `coverage` | Wird jeder öffentliche Name vorgeführt und beschrieben? |
 | `warnings` | Bauen Referenz, Katalog und Fork-Vorlage ohne eine einzige Compiler-Meldung? |
-| `identity` | Trägt das PDF Titel, Autor und Kennungen? |
+| `identity` | Trägt das PDF Titel, Autor und Kennungen — mit ihren Werten? |
+| `fork-check` | `typst init` + `make build`: Funktioniert der Fork-Weg am Tag 1? |
 
 Nicht geprüft wird, was Typst selbst fängt — unbekannte Argumente, falsche
 Typen, fehlende Verweisziele. Eine Prüfung dafür wäre eine zweite Wahrheit
@@ -124,12 +129,15 @@ tests/         der Harness
 
 | | LaTeX | Typst |
 |---|---|---|
-| Gestaltungssystem | 5560 Zeilen | 1355 Zeilen |
-| Harness | 4102 Zeilen | 731 Zeilen |
-| Regelwerk | 95 KB | 29 KB |
+| Gestaltungssystem | 5560 Zeilen (`styles/`) | 1706 Zeilen (`lib.typ` + `src/`) |
+| Harness | 4102 Zeilen | 944 Zeilen |
+| Regelwerk | 95 KB | 33 KB |
 | Vollbuild | 7,2 s | 0,13 s |
-| `make check` | 8 s + Tiefenprüfungen | 3,1 s |
+| `make check` | 8 s + Tiefenprüfungen | wenige Sekunden |
 | Fork anlegen | eigenes Skript plus Verifier | `typst init` |
+
+Die Typst-Spalte ist eine Momentaufnahme und wächst mit dem System; die
+belastbare Zahl zählt der Katalog beim Bauen (`make catalog`, Eintrag H-05).
 
 Der grösste Teil des alten Systems war Notwehr gegen LaTeX: verzögerte
 Farbauflösung, damit Regler einander nicht verwerfen; Reserven und Penalties,

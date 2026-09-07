@@ -9,6 +9,7 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 PDF="${1:-katalog.pdf}"
 RELEASE="${2:-}"
+BUILD="${3:-}"
 fail=0
 
 [ -f "$PDF" ] || {
@@ -30,12 +31,20 @@ want() { # feld  muster
 
 want Title "ZSF Template"
 want Author "Hliddal"
-want Keywords "release-id:"
-want Keywords "build-id:"
-# `subject` und `build` sind auf der Seite unsichtbar; ihr einziger Nachweis
-# steht hier. Der Wert selbst wird geprüft, nicht nur das Feld.
+# `subject`, `release` und `build` sind auf der Seite unsichtbar bzw. nur als
+# Kennung im Fuss zu sehen; ihr einziger Nachweis steht hier. Geprüft wird der
+# WERT, nicht das Feld: »build-id:« stünde auch dann im PDF, wenn die
+# Stellschraube gar nicht mehr gelesen würde — der leere Wert fiel niemandem
+# auf, und `coverage.sh` hielt `build` allein wegen dieses Kommentars für
+# geprüft.
 want Keywords "subject:Referenz-Implementierung"
 [ -n "$RELEASE" ] && want Keywords "release-id:$RELEASE"
+[ -n "$BUILD" ] && want Keywords "build-id:$BUILD"
+if [ -z "$RELEASE" ] || [ -z "$BUILD" ]; then
+  echo "  identity: ohne Release- und Build-Kennung aufgerufen — die zwei"
+  echo "      Stellschrauben bleiben dann ungeprüft (Aufruf: identity.sh PDF RELEASE BUILD)"
+  fail=1
+fi
 
 # Das Format ist Teil der Identität: A4 quer, sonst stimmt der ganze Satz nicht.
 if ! grep -E '^Page size' <<<"$info" | grep -q "841.89 x 595.276"; then

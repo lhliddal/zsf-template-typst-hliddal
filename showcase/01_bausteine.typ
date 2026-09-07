@@ -74,6 +74,7 @@ Regler #xref(<ch:regler>) statt einen Baustein zu suchen.
   stellt, hat den Trenner nicht gefunden.
 ]
 
+#gap("section")
 #before[Dieser Satz gehört zur folgenden Box und rückt an sie heran.]
 #panel(weight: "quiet")[Gebundener Text][
   #lbl[before] bindet nach unten, #lbl[after] nach oben.

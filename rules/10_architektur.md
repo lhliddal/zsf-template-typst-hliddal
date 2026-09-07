@@ -54,14 +54,6 @@ den Stellschrauben gerechnet. Ein hartes `pt`/`mm`-Mass in einem anderen Modul
 meldet `make lint` — relative Masse (`em`, `%`, `fr`) sind erlaubt, weil sie
 mitskalieren.
 
-## Warum es wenig zu prüfen gibt
-
-Der Vorgänger brauchte 4158 Zeilen Verifier, weil LaTeX Fehler stillschweigend
-annahm: ein unbekannter Schlüssel, ein Regler, der einen anderen verwirft, ein
-Mass, das niemand liest. Typst bricht bei all dem selbst ab. Was bleibt, prüft
-etwas, das eine Sprache nicht sehen kann — Wirkung, Vollständigkeit, Grenze
-zwischen Inhalt und Gestaltung (`60_workflow`).
-
 ## Beim Editieren von `src/`
 
 - Neue Gestaltungsmasse nach `config.typ`, nicht daneben.

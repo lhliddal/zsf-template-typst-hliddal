@@ -36,9 +36,10 @@ Zur blossen Betonung sind sie falsch — dafür gibt es `danger` und `hl`.
 
 **Über das ganze Dokument:** Grössenfarben. Eine Farbe gehört im ganzen
 Dokument *einer* Grösse — vergeben in `zsf(quantities: ("Kraft": 0, …))`, nie
-im Kapitel. Danach `$#quantity("Kraft", $F$) = m dot a$`. Ein nicht vergebener
-Name bricht den Build. Wo ein Fach keine wiederkehrenden Grössen hat, bleibt
-der Eintrag leer.
+im Kapitel. Danach `$#quantity("Kraft", $F$) = m dot a$`. **Acht Slots (0–7),
+und jeder nur einmal**; ein doppelt oder ausserhalb vergebener Slot bricht den
+Build, ebenso ein nicht vergebener Name im Kapitel. Wo ein Fach keine
+wiederkehrenden Grössen hat, bleibt der Eintrag leer.
 
 Die Namen sind in Grossbuchstaben (`markA` statt `mark-a`), weil ein
 Bindestrich im Mathe-Modus ein Minuszeichen ist.

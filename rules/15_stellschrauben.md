@@ -25,8 +25,8 @@ prüft zusätzlich jede Schraube am gerenderten Satz auf Wirkung.
 | Name | Vorbelegung | Wirkung |
 |---|---|---|
 | `title` | `"Zusammenfassung"` | Dokumentkopf und PDF-Titel |
-| `author` | `""` | Kopfzeile rechts und PDF-Autor |
-| `subject` | `""` | Fusszeile links und PDF-Keywords |
+| `author` | `""` | Zeile unter dem Titel im Dokumentkopf, und PDF-Autor |
+| `subject` | `""` | nur PDF-Keywords — auf der Seite unsichtbar |
 | `release`, `build` | aus `sys.inputs` | Kennungen; das Makefile setzt sie |
 
 ## Grösse und Dichte
@@ -58,6 +58,10 @@ Skalierung, die Zeilenhöhe enthält die Schrift selbst.
 
 Die Bereichsfaktoren multiplizieren den globalen Faktor für **ihren** Bereich —
 für ZSF, die ungleich verteilt sind.
+
+Für ein einzelnes Kapitel oder einen Anhang gibt es `density-scope(0.85)[…]`:
+Es skaliert die Dichte lokal und erlaubt mit `breakable: true`, alle enthaltenen
+Boxen durchlaufen zu lassen.
 
 ## Seite und Schrift
 

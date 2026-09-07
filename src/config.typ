@@ -81,7 +81,10 @@
   // ── Bausteine ──────────────────────────────────────────────
   // Zeigt das Register zusätzlich die Druckseite, nicht nur den Abschnitt?
   index-pages: true,
-  // Maximalhöhen für Bilder — Inhalt, kein Abstand, folgt der Dichte nicht.
+  // Die Höhe, die ein Bild-Container reserviert — Inhalt, kein Abstand, folgt
+  // der Dichte nicht. FESTE Höhe, keine Obergrenze: Genau dadurch ist eine
+  // Bildspalte von selbst einheitlich hoch. Ein flaches Bild steht deshalb in
+  // einer leeren Bande; wo das stört, sticht `image(…, height: …)` pro Stelle.
   image-height: 1.1cm, // in einer Tabellenzeile
   figure-height: 2.6cm, // als eigener Block
 )
@@ -91,6 +94,10 @@
 #let derive(c) = {
   let d = c.density
   let unit = c.size / 8pt // Basismasse sind auf 8pt geeicht
+  // »Eine Stufe kleiner« — dieselbe Stufe für den `dense`-Regler und für Code.
+  let step = 0.88
+  // Und die leisere Stufe darunter: Anmerkung, Bildunterschrift, Kopfzeile.
+  let quiet-step = 0.86
 
   let blocks = d * c.density-blocks
   let tables = d * c.density-tables
@@ -118,6 +125,10 @@
     // Tabellen: Zellpolsterung und Zeilenluft.
     cell: (
       x: 3.2pt * tables * unit,
+      // `colsep: "tight"` lieh sich bisher das SENKRECHTE Register `y`. Es war
+      // zufällig kleiner und sah deshalb richtig aus — aber wer je die
+      // Zeilenluft ändert, verstellte damit still die Spaltenpolsterung.
+      x-tight: 2.2pt * tables * unit,
       y: 2.2pt * tables * unit,
       y-tight: 1.2pt * tables * unit,
       y-roomy: 4.2pt * tables * unit,
@@ -139,6 +150,15 @@
     // Form.
     radius: 2.2pt * unit,
     rule: 0.5pt,
+    // Code steht RELATIV zu seiner Umgebung und nicht auf einer absoluten
+    // Grösse: An `dense` gebunden war Inline-Code im Fliesstext bei
+    // `prose-scale: 0.75` GRÖSSER als der Text darum herum — dieselbe
+    // verkehrte Rangfolge, die `note` hatte. Als `em` folgt er jeder
+    // Umgebung, in der er steht: Prosa, Boxinhalt, dichte Box, Tabellenzelle.
+    mono-scale: step,
+    // Dieselbe leise Stufe als VERHÄLTNIS — für Stellen, die schon in einer
+    // gesetzten Umgebung stehen und ihr folgen sollen (Register-Seitenzahl).
+    quiet-scale: quiet-step,
     // Schriftrollen, alle als Vielfaches der Grundgrösse.
     // Drei Rollen, drei Fragen. `body` ist der Bausteininhalt, `prose` der
     // Text dazwischen, und alles Übrige hängt direkt an der Grundgrösse —
@@ -152,16 +172,62 @@
       section: c.size * 1.06,
       subsection: c.size * 1.0,
       title: c.size * 1.0, // Box-Titel
-      dense: c.size * c.content-scale * 0.88, // der `dense`-Regler
-      note: c.size * 0.86, // Anmerkung, Bildunterschrift
+      dense: c.size * c.content-scale * step, // der `dense`-Regler
+      // Anmerkung, Bildunterschrift und Diagramm-Beschriftung stehen IN einem
+      // Baustein und folgen deshalb `content-scale` wie sein übriger Inhalt.
+      // Ohne ihn kippte die Rangfolge: Bei `content-scale: 0.75` stand die
+      // Anmerkung unter einer Formel grösser da als die Formel selbst.
+      note: c.size * c.content-scale * quiet-step, // Anmerkung, Bildunterschrift
+      label: c.size * c.content-scale * 0.80, // Diagramm-Beschriftung
+      // Das Meta-Tag und die Autorenzeile des Dokumentkopfs gehören zu den
+      // BALKEN, nicht zum Bausteininhalt: Sie stehen auf einer Titelfläche und
+      // müssen mit ihr zusammenbleiben, wenn ein Rollen-Faktor gedreht wird.
       tag: c.size * 0.82, // Meta-Tag im Titel
-      label: c.size * 0.80, // Diagramm-Beschriftung
+      header-note: c.size * quiet-step, // Autorenzeile im Dokumentkopf
       footer: 6pt, // Seitenmöbel: feste physische Grösse
     ),
   )
 }
 
 #let cfg = state("zsf-config", derive(defaults))
+#let config-stack = state("zsf-config-stack", ())
 
 /// Liest die Konfiguration. Nur innerhalb von `context` verwendbar.
-#let conf() = cfg.get()
+#let conf() = {
+  let s = config-stack.get()
+  if s.len() > 0 { s.last() } else { cfg.get() }
+}
+
+/// Bereichsweise Anpassung von Dichte und Umbruchverhalten (z. B. für den Anhang).
+///
+/// Kann als Block `#density-scope(0.85)[ ... ]` oder als Show-Regel
+/// `#show: density-scope.with(0.85, breakable: true)` verwendet werden.
+///
+/// - `density`: Faktor auf die laufende Dichte (z. B. `0.85` für 15 % dichter)
+/// - `breakable`: `auto` (behält Vorbelegung), `true` (alle Boxen brechbar), `false`
+#let density-scope(..args) = {
+  let named = args.named()
+  let pos = args.pos()
+  if pos.len() == 0 {
+    panic("density-scope: erwartet [Inhalt] als letztes Argument")
+  }
+  let body = pos.last()
+  let factor = if pos.len() > 1 { pos.first() } else { named.at("density", default: 1.0) }
+  let breakable = named.at("breakable", default: auto)
+  if type(factor) not in (int, float) or factor <= 0 {
+    panic("density-scope: »density« muss eine Zahl grösser null sein — nicht " + repr(factor))
+  }
+  if breakable not in (auto, true, false) {
+    panic("density-scope: »breakable« erwartet auto, true oder false — nicht " + repr(breakable))
+  }
+  context {
+    let c = conf()
+    let new-c = derive(c + (
+      density: c.density * factor,
+      breakable: if breakable == auto { c.at("breakable", default: false) } else { breakable },
+    ))
+    config-stack.update(s => s + (new-c,))
+    body
+    config-stack.update(s => s.slice(0, -1))
+  }
+}
