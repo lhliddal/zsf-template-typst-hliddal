@@ -65,3 +65,12 @@ Ein Baustein, sechs Regler. Alle Einträge zeigen dieselben Zellen.
   [Muster], [zum Vergleich],
 )
 #zweck("E-09", none)[E-09 · ohne `title` — die Tabelle ohne eigene Box.]
+
+#tablebox[E-10 · tablebox + inset][
+  #inset[Textblock mit Innenabstand über der Tabelle:]
+  #tabular(cols: (1, 1.2),
+    [Kopf], [Kopf],
+    [Muster], [zum Vergleich],
+  )
+]
+#zweck("E-10", ("tablebox", "inset"))[Container für Tabellen & Text: Zebra schliesst am Rand ab.]

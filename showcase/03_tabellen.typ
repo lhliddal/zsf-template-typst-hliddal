@@ -54,9 +54,9 @@ Zellen — sie »halb« zu setzen ist strukturell nicht mehr möglich.
   [ohne], [Linien],
 )
 
-== Tabelle ohne Box <sec:tabnackt>
+== Container vs. Inhalt: tablebox & inset <sec:tablebox>
 
-#panel[Zwei Inhaltsarten in einer Box][
-  Ein erklärender Satz oben, die Tabelle darunter bis an die Kante:
+#tablebox[Zwei Inhaltsarten in einer Box][
+  #inset[Ein erklärender Satz oben mit sauberem Innenabstand, die Tabelle darunter bis an die Kante:]
   #tabular(cols: (1, 1), [Grösse], [Einheit], [Kraft], [N], [Weg], [m])
 ]

@@ -13,7 +13,7 @@
 
 #import "src/palette.typ": seeds as palette, tone-of
 #import "src/structure.typ": front, newcol, active-tone as tone
-#import "src/blocks.typ": panel, warn, formula, picture, code, steps, facts, item, split, sep, note, before, after, given, step, target, case, gap
+#import "src/blocks.typ": panel, warn, formula, picture, code, steps, facts, item, split, sep, note, before, after, given, step, target, case, gap, tablebox, inset, formula-line
 #import "src/config.typ": density-scope
 #import "src/tables.typ": tabular
 #import "src/media.typ": fig, fig-side, caption

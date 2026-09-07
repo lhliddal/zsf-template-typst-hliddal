@@ -56,8 +56,22 @@ zuletzt `leading` — danach das PDF auf kollidierende Formelzeilen prüfen. Die
 drei sind getrennt, weil unterschiedlich riskant: Abstände vertragen jede
 Skalierung, die Zeilenhöhe enthält die Schrift selbst.
 
-Die Bereichsfaktoren multiplizieren den globalen Faktor für **ihren** Bereich —
-für ZSF, die ungleich verteilt sind.
+## Die 3-Ebenen-Regler-Pyramide (L1 / L2 / L3)
+
+Das System steuert Abstände und Dichte hierarchisch über drei Ebenen:
+
+| Ebene | Gilt für | Wo entschieden |
+|---|---|---|
+| **L1 Global** | das gesamte Dokument | `zsf(size: …, density: …, leading: …)` |
+| **L2 Bereich** | eine Bausteinfamilie | `zsf(density-blocks: …, density-tables: …, …)` |
+| **L3 Instanz** | eine einzelne Box | Regler am Baustein (`pad: …`, `weight: …`) |
+
+Rechenweg: **effektives Mass = L1 × L2 × Basismass**.
+
+**Warum L2 existiert (Schutz vor KI-Hacks):** Eine box-lastige ZSF braucht
+engere Box-Polsterung bei unangetastetem Fliesstext. Ohne L2 bliebe einer KI nur,
+lokale Abstände oder Notausgänge in Kapitel einzufügen. L2 erlaubt es, eine ganze
+Familie zentral zu verdichten, ohne den Rest des Dokuments zu stauchen.
 
 Für ein einzelnes Kapitel oder einen Anhang gibt es `density-scope(0.85)[…]`:
 Es skaliert die Dichte lokal und erlaubt mit `breakable: true`, alle enthaltenen

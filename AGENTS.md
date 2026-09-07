@@ -1,6 +1,6 @@
 # ZSF Template (Typst) — AGENTS.md
 
-> ERZEUGT — rules-hash:04d7033dcd9e5e99
+> ERZEUGT — rules-hash:f29215157f8ca01e
 >
 > Quelle: `rules/*.md`. Nicht direkt bearbeiten.
 > Ändern: `rules/*.md` editieren → `make sync-rules`. Drift: `make check-rules`.
@@ -254,8 +254,22 @@ zuletzt `leading` — danach das PDF auf kollidierende Formelzeilen prüfen. Die
 drei sind getrennt, weil unterschiedlich riskant: Abstände vertragen jede
 Skalierung, die Zeilenhöhe enthält die Schrift selbst.
 
-Die Bereichsfaktoren multiplizieren den globalen Faktor für **ihren** Bereich —
-für ZSF, die ungleich verteilt sind.
+## Die 3-Ebenen-Regler-Pyramide (L1 / L2 / L3)
+
+Das System steuert Abstände und Dichte hierarchisch über drei Ebenen:
+
+| Ebene | Gilt für | Wo entschieden |
+|---|---|---|
+| **L1 Global** | das gesamte Dokument | `zsf(size: …, density: …, leading: …)` |
+| **L2 Bereich** | eine Bausteinfamilie | `zsf(density-blocks: …, density-tables: …, …)` |
+| **L3 Instanz** | eine einzelne Box | Regler am Baustein (`pad: …`, `weight: …`) |
+
+Rechenweg: **effektives Mass = L1 × L2 × Basismass**.
+
+**Warum L2 existiert (Schutz vor KI-Hacks):** Eine box-lastige ZSF braucht
+engere Box-Polsterung bei unangetastetem Fliesstext. Ohne L2 bliebe einer KI nur,
+lokale Abstände oder Notausgänge in Kapitel einzufügen. L2 erlaubt es, eine ganze
+Familie zentral zu verdichten, ohne den Rest des Dokuments zu stauchen.
 
 Für ein einzelnes Kapitel oder einen Anhang gibt es `density-scope(0.85)[…]`:
 Es skaliert die Dichte lokal und erlaubt mit `breakable: true`, alle enthaltenen
@@ -316,7 +330,10 @@ Build.
 | Warnung, Stolperfalle | `warn[…]` (Titel vorbelegt mit »Achtung«) |
 | Formel(n), evtl. mit Kontext | `formula[…]` |
 | Benannte Formel | `formula(weight: "caption")[Name][…]` |
-| Tabelle | `tabular(title: […], cols: (…))[…]` (`40_tabellen`) |
+| Tabelle (einfach) | `tabular(title: […], cols: (…))[…]` (`40_tabellen`) |
+| Container für Tabellen & Text | `tablebox[Titel][…]` (`pad: "none"`) |
+| Textblock in randloser Box | `inset[…]` (erhält horizontalen Innenabstand) |
+| Formel mit Notiz | `formula-line($…$, […])` |
 | Abbildung aus Dateien | `fig(image("…"), cap: […])` |
 | Selbstgezeichnetes Diagramm | `picture[Titel][…]` + `caption` |
 | Bild neben Text | `fig-side(image("…"))[…]` |
@@ -328,7 +345,7 @@ Build.
 | Vertikaler Blockabstand | `gap()` (`"xs"`, `"s"`, `"m"`, `"l"`, `"section"`) |
 | Reiner Fliesstext | ein Absatz — kein Baustein nötig |
 
-`warn`, `formula`, `picture`, `steps` und `code` sind **Vorbelegungen von
+`warn`, `formula`, `picture`, `steps`, `code` und `tablebox` sind **Vorbelegungen von
 `panel`**. Ein Name kommt nur dazu, wenn er eine eigene Absicht trägt *und*
 eine Vorbelegung, die man sonst komponieren müsste.
 
@@ -371,6 +388,13 @@ Inhaltsfrage, nicht auf »welche Box nehme ich«.
   es auch. Es gibt dafür nichts zu setzen — `tone` an der Box genügt, und ein
   Baustein darin braucht ihn nicht ein zweites Mal.
 - **Anmerkungen:** `note[…]` als dezente Zeile unter einer Formel.
+- **Kollisionsfreie Formel-Notiz:** `formula-line($…$, […])` zentriert die Formel
+  und setzt die Notiz rechtsbündig daneben. Bei Platzmangel weicht die Formel leicht aus
+  oder bricht zweizeilig um, ohne jemals überdeckt zu werden.
+- **Container vs. Inhalt:** `tablebox` ist der Rahmen (`pad: "none"`, `frame: "hard"`),
+  `tabular` das Gitter. Dadurch kann eine Box mehrere Tabellen oder eine Tabelle mit
+  erklärendem Text tragen: Textblöcke erhalten mit `inset[…]` horizontalen Innenabstand,
+  während das Tabellenzebra bündig an den Rahmen stösst.
 - **Text an eine Box binden:** `before[…]` gehört zur folgenden Box,
   `after[…]` zur vorhergehenden.
 - **Listen:** Einträge sind native Listenpunkte (`-` bzw. `+`); `item[Marke][Text]`
@@ -474,12 +498,22 @@ der Build bricht ab: dann `kw(term: "C¹-Funktion")[$C^1$-Funktion]`.
 Kapitel-Identität auf Flächen, den Wegweiser zum Ziel eines Verweises, und die
 Zuordnung in Formeln.
 
-## Verweise
+## Verweise & Doppelkodierung
 
 `xref(<label>)` springt mit Pfeil und in der Farbe des Zielkapitels — einsetzen,
 wenn der Sprung in der Prüfung Suchzeit spart. `sec-ref(<label>)` ist die
 kompakte Zielnummer für lokale Übersichten. `script-ref(42)` verweist auf die
 Skript-Seite. Ein Verweis ins Leere bricht den Build.
+
+**Neuro-Didaktische Doppelkodierung (Farbe vor Zahl):** Unter Prüfungsstress
+sinkt die sequentielle Lesekapazität. Das periphere Sehen erfasst Farben und
+Formen in Millisekunden vor Ziffern:
+- **Redundante Wegweiser:** `xref` paart immer die Farbe des Zielkapitels mit der
+  Abschnittsnummer. Das Auge erkennt das Themenfeld sofort aus dem Augenwinkel.
+- **Grössenfarben (`quantity`):** Eine Fachgrösse behält dokumentweit dieselbe Tinte
+  (z. B. Geschwindigkeit immer Türkis). Substitutionsschritte werden sofort scanbar.
+- **Lautstärke-Differenzierung:** Kapitel gesättigt, Abschnitte hell, Unterabschnitte
+  dezent — hierarchische Orientierung ohne Farb-Wildwuchs im Fliesstext.
 
 ## Der Ink-Vertrag
 

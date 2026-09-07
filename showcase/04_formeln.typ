@@ -32,6 +32,12 @@ Klammern unter dem Term, Vektoren und Matrizen. Ergänzt wird nur, was fehlt.
   $ integral_a^b u' v = [u v]_a^b - integral_a^b u v' $
 ]
 
+#formula[Kollisionsfreie Notiz][
+  #formula-line($E = m c^2$, [im Vakuum])
+  #sep()
+  #formula-line($nabla times bold(E) = - (dif bold(B)) / (dif t)$, [Induktionsgesetz])
+]
+
 == Terme benennen und verfolgen <sec:markieren>
 
 #formula[Der Name steht am Term][

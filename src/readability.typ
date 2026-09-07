@@ -34,8 +34,17 @@
 /// weil auf sie ein Satzzeichen folgen darf.
 #let unit-pattern = "\d+(?:[.,]\d+)?[ \t]+(?:%|°[CFK]?|[A-Za-zµΩ]{1,3}(?:/[A-Za-zµΩ]{1,3})?\b)"
 
-/// Bindet Zahl und Einheit im ganzen Dokument.
+/// Kurzer Bezeichner mit Doppelpunkt (Variablenbeschreibung, z. B. »m: 5«, »r: Rang«).
+///
+/// Längenbegrenzung (COLON_MAX_IDENT <= 4, Folgewort <= 8 Zeichen): Nur kurze
+/// Bezeichner mit kompaktem Folgewert werden gebunden. Ein Satzdoppelpunkt oder
+/// eine lange Folgeerklärung darf umbrechen, um in ~50 mm schmalen Spalten
+/// überlaufende Zeilen zu verhindern.
+#let colon-pattern = "(?:\b|\A)([a-zA-Z0-9äöüÄÖÜ_]{1,4}:)[ \t]+([^\s]{1,8}\b)"
+
+/// Bindet Zahl und Einheit sowie kurze Variablen-Doppelpunkte im ganzen Dokument.
 #let bind-units(body) = {
   show regex(unit-pattern): it => box(it)
+  show regex(colon-pattern): it => box(it)
   body
 }

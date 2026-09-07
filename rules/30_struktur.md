@@ -69,12 +69,22 @@ der Build bricht ab: dann `kw(term: "C¹-Funktion")[$C^1$-Funktion]`.
 Kapitel-Identität auf Flächen, den Wegweiser zum Ziel eines Verweises, und die
 Zuordnung in Formeln.
 
-## Verweise
+## Verweise & Doppelkodierung
 
 `xref(<label>)` springt mit Pfeil und in der Farbe des Zielkapitels — einsetzen,
 wenn der Sprung in der Prüfung Suchzeit spart. `sec-ref(<label>)` ist die
 kompakte Zielnummer für lokale Übersichten. `script-ref(42)` verweist auf die
 Skript-Seite. Ein Verweis ins Leere bricht den Build.
+
+**Neuro-Didaktische Doppelkodierung (Farbe vor Zahl):** Unter Prüfungsstress
+sinkt die sequentielle Lesekapazität. Das periphere Sehen erfasst Farben und
+Formen in Millisekunden vor Ziffern:
+- **Redundante Wegweiser:** `xref` paart immer die Farbe des Zielkapitels mit der
+  Abschnittsnummer. Das Auge erkennt das Themenfeld sofort aus dem Augenwinkel.
+- **Grössenfarben (`quantity`):** Eine Fachgrösse behält dokumentweit dieselbe Tinte
+  (z. B. Geschwindigkeit immer Türkis). Substitutionsschritte werden sofort scanbar.
+- **Lautstärke-Differenzierung:** Kapitel gesättigt, Abschnitte hell, Unterabschnitte
+  dezent — hierarchische Orientierung ohne Farb-Wildwuchs im Fliesstext.
 
 ## Der Ink-Vertrag
 

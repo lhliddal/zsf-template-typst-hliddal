@@ -24,7 +24,10 @@ Build.
 | Warnung, Stolperfalle | `warn[…]` (Titel vorbelegt mit »Achtung«) |
 | Formel(n), evtl. mit Kontext | `formula[…]` |
 | Benannte Formel | `formula(weight: "caption")[Name][…]` |
-| Tabelle | `tabular(title: […], cols: (…))[…]` (`40_tabellen`) |
+| Tabelle (einfach) | `tabular(title: […], cols: (…))[…]` (`40_tabellen`) |
+| Container für Tabellen & Text | `tablebox[Titel][…]` (`pad: "none"`) |
+| Textblock in randloser Box | `inset[…]` (erhält horizontalen Innenabstand) |
+| Formel mit Notiz | `formula-line($…$, […])` |
 | Abbildung aus Dateien | `fig(image("…"), cap: […])` |
 | Selbstgezeichnetes Diagramm | `picture[Titel][…]` + `caption` |
 | Bild neben Text | `fig-side(image("…"))[…]` |
@@ -36,7 +39,7 @@ Build.
 | Vertikaler Blockabstand | `gap()` (`"xs"`, `"s"`, `"m"`, `"l"`, `"section"`) |
 | Reiner Fliesstext | ein Absatz — kein Baustein nötig |
 
-`warn`, `formula`, `picture`, `steps` und `code` sind **Vorbelegungen von
+`warn`, `formula`, `picture`, `steps`, `code` und `tablebox` sind **Vorbelegungen von
 `panel`**. Ein Name kommt nur dazu, wenn er eine eigene Absicht trägt *und*
 eine Vorbelegung, die man sonst komponieren müsste.
 
@@ -79,6 +82,13 @@ Inhaltsfrage, nicht auf »welche Box nehme ich«.
   es auch. Es gibt dafür nichts zu setzen — `tone` an der Box genügt, und ein
   Baustein darin braucht ihn nicht ein zweites Mal.
 - **Anmerkungen:** `note[…]` als dezente Zeile unter einer Formel.
+- **Kollisionsfreie Formel-Notiz:** `formula-line($…$, […])` zentriert die Formel
+  und setzt die Notiz rechtsbündig daneben. Bei Platzmangel weicht die Formel leicht aus
+  oder bricht zweizeilig um, ohne jemals überdeckt zu werden.
+- **Container vs. Inhalt:** `tablebox` ist der Rahmen (`pad: "none"`, `frame: "hard"`),
+  `tabular` das Gitter. Dadurch kann eine Box mehrere Tabellen oder eine Tabelle mit
+  erklärendem Text tragen: Textblöcke erhalten mit `inset[…]` horizontalen Innenabstand,
+  während das Tabellenzebra bündig an den Rahmen stösst.
 - **Text an eine Box binden:** `before[…]` gehört zur folgenden Box,
   `after[…]` zur vorhergehenden.
 - **Listen:** Einträge sind native Listenpunkte (`-` bzw. `+`); `item[Marke][Text]`

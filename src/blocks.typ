@@ -242,6 +242,9 @@
 ///   ```]
 #let code(..args) = _preset(panel, args, (surface: "plain", pad: "tight"))
 
+/// Container für Tabellen und gemischte Inhalte (Zebra läuft bis an den Rand).
+#let tablebox(..args) = _preset(panel, args, (pad: "none", frame: "hard"))
+
 // ── Trenner und Anmerkungen ──────────────────────────────────
 /// Trennt zwei Blöcke INNERHALB einer Box, wahlweise mit Beschriftung.
 #let sep(label: none) = context {
@@ -263,11 +266,56 @@
   })
 }
 
+/// Rückt einen Text- oder Inhaltsblock innerhalb einer randlosen Box (z. B. tablebox)
+/// auf den normalen horizontalen Innenabstand ein.
+#let inset(body) = context {
+  let c = conf()
+  block(width: 100%, inset: (x: c.pad.x, y: c.pad.y-tight), body)
+}
+
 /// Dezente Anmerkung unter einer Formel.
 #let note(body) = context {
   let c = conf()
   block(above: c.space.xs, below: 0pt, text(size: c.font-size.note, fill: ink-muted, body))
 }
+
+/// Zentrierte Formel mit rechtsbündiger Notiz und dynamischer Kollisionsvermeidung:
+/// 1. Symmetrisch zentriert, wenn die Notiz auf beiden Seiten Platz hätte.
+/// 2. Einzeilig mit leichter Verschiebung, wenn die Summe der Breiten passt.
+/// 3. Zweizeilig (Formel zentriert, Notiz rechts darunter), wenn der Platz nicht reicht.
+#let formula-line(math-body, note-body) = layout(size => context {
+  let c = conf()
+  let is-eq = type(math-body) == content and math-body.func() == math.equation
+  let m = if is-eq { math-body } else { math.equation(block: false, math-body) }
+  let n = text(size: c.font-size.note, fill: ink-muted, note-body)
+
+  let w-math = measure(m).width
+  let w-note = measure(n).width
+  let gap = c.pad.x-tight
+  let avail = size.width
+
+  if w-math + gap + w-note <= avail {
+    if (w-note * 2 + w-math + gap * 2) <= avail {
+      grid(
+        columns: (w-note, 1fr, w-note),
+        align: (left + horizon, center + horizon, right + horizon),
+        [], m, n,
+      )
+    } else {
+      grid(
+        columns: (1fr, auto),
+        align: (left + horizon, right + horizon),
+        m, n,
+      )
+    }
+  } else {
+    block(width: 100%, [
+      #_align(center, m)
+      #v(c.space.xs)
+      #_align(right, n)
+    ])
+  }
+})
 
 /// Satz, der an die FOLGENDE Box gehört.
 #let before(body) = context block(above: conf().space.s, below: conf().space.xs, body)

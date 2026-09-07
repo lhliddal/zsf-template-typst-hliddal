@@ -69,3 +69,10 @@ faellt sie rot aus, ohne dass im Kapitel etwas steht.]
   #given[Voraussetzung] #sym.arrow.r #step[Schritt] #sym.arrow.r #target[Ziel]
 ]
 #zweck("G-07", ("given", "step", "target"))[Die Glieder einer Kette einzeln, wenn `case` zu starr ist.]
+
+#formula[G-10 · formula-line][
+  #formula-line($E = m c^2$, [im Vakuum])
+  #sep()
+  #formula-line($nabla times bold(E) = - (dif bold(B)) / (dif t)$, [Induktion])
+]
+#zweck("G-10", "formula-line")[Zentrierte Formel mit dynamisch kollisionsfreier Notiz.]
